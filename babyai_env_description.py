@@ -1,13 +1,12 @@
-import os
-import sys
 import random
 import itertools
 import inspect
 from collections import Counter, defaultdict
+
 import torch
+from babyai.common import *
 
 from datasets.formats.task_sequence import TaskSequence
-from environments.babyai.common import *
 
 
 EGO_ROW = VIEW_SHAPE[0] - 1

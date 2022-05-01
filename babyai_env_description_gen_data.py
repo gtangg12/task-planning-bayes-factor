@@ -6,9 +6,11 @@ import glob
 import pickle
 import multiprocessing
 
+from babyai.common import *
+
 from babyai_task_sequence import load_sequences
 from babyai_env_description import generate_env_description_sample
-from environments.babyai.common import *
+
 
 
 def generate_samples(path, args):

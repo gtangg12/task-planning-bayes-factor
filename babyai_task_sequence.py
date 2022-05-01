@@ -3,8 +3,9 @@ import blosc
 import torch
 from dataclasses import dataclass
 
+from babyai.common import *
+
 from datasets.formats.task_sequence import *
-from environments.babyai.common import *
 
 
 @dataclass

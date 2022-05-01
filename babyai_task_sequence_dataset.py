@@ -5,11 +5,11 @@ from dataclasses import asdict
 
 import torch
 from torch.nn.utils.rnn import pad_sequence
+from babyai.common import *
 
 from datasets.formats.task_sequence import TaskSequence
 from datasets.task_sequence_dataset import TaskCompletitionDataset
 from datasets.collate_utils import collate_list_of_dict
-from environments.babyai.common import *
 from babyai_task_sequence import numeric_encode_task
 
 
