@@ -13,17 +13,21 @@ from datasets.text_sequence_classification import (
 )
 
 
+FULLPATH = '/nobackup/users/gtangg12/task_planning_bayes_factor'
+
 NUM_CLASSES = len(ACTIONS)
 NUM_CHUNKS = 1
 
 
+# Load data 
 filter_fn = lambda filename: chunknum_from_path(filename) < NUM_CHUNKS
-texts, labels = load_sequences_from_dir('data/babyai/env_description_chunked', filter_fn)
+texts, labels = load_sequences_from_dir(f'{FULLPATH}/data/babyai/env_description_chunked', filter_fn)
 
 # numeric encode actions
 labels = list(map(lambda action: ACTIONS_TO_INDEX[action], labels))
 
 
+# Tokenizer, Model, and Metrics 
 tokenizer = AutoTokenizer.from_pretrained('gpt2', use_fast=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenize_fn = lambda text: tokenizer(text, padding='max_length', truncation=True)
@@ -40,14 +44,16 @@ def compute_metrics(eval_pred):
     }
 
 
+# Datasets
 text_sequence_dataset = TextSequenceClassificationDataset(texts, labels, tokenize_fn)
 num_train = int(len(text_sequence_dataset) * 0.85)
 train_dataset, eval_dataset = \
     torch.utils.data.random_split(text_sequence_dataset , [num_train, len(text_sequence_dataset ) - num_train])
 
 
+# Training 
 training_args = TrainingArguments(
-    output_dir='checkpoints/babyai_lm', 
+    output_dir=f'{FULLPATH}/checkpoints/babyai_lm', 
     evaluation_strategy='steps', 
     save_strategy='epoch',
     gradient_accumulation_steps=1, # 1024 effective bs
