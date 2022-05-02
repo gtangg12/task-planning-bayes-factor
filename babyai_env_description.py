@@ -127,24 +127,28 @@ def image_description(image: torch.tensor, view_partition) -> str:
 
 
 class TaskSequencePromptBuilder():
-    def __init__(self, sequence: TaskSequence, view_encoding: str):
+    def __init__(self, sequence: TaskSequence, view_encoding: str) -> None:
         self.sequence = sequence
         self.view_partition = make_view_partition(view_encoding)
-        
-        # inventory over time
-        self.inventory_history = []
-        cur_item = None
-        for frame in range(sequence.sequence):
-            cur_action = frame.actions['name']
-            if cur_action == 'pickup':
-                cur_item = location_string(frame.features['images'])
-            elif cur_action == 'drop':
-                cur_item = None
-            self.inventory_history.append(cur_item)
-    
-    def build_prompt(self, timestamp: int):
+        self.inventory_history = self.build_inventory_history(sequence)
+
+    @classmethod
+    def build_inventory_history(cls, sequence: TaskSequence):
+        """ Build a list of inventory items over time (None denotes empty inventory) """
+        inventory_history = []
+        item = None
+        for frame in sequence.frames:
+            action = frame.action.name
+            if action == 'pickup':
+                item = location_string(frame.image)
+            elif action == 'drop':
+                item = None
+            inventory_history.append(item)
+        return inventory_history
+  
+    def generate_env_description(self, timestamp: int) -> str:
         """ Generate a verbal description of the actor's current state """
-        image = self.sequence.sequence[timestamp].features['images']
+        image = self.sequence.frames[timestamp].image
         description = [image_description(image, self.view_partition)]
         if self.inventory_history[timestamp]:
             description.append(f'You are carrying a {self.inventory_item}.')
@@ -152,18 +156,17 @@ class TaskSequencePromptBuilder():
             description.append('You are not carrying anything.')
         return ' '.join(description)
     
-    def action_taken(self, timestamp):
+    def get_action_taken(self, timestamp: int) -> str:
         """ Return the action taken by the actor given the current state """
-        action = self.sequence.sequence[timestamp].features.actions['name']
-        return ACTIONS[action]
+        return self.sequence.frames[timestamp].action.name
 
 
-def generate_env_description_sample(sequence, view_encoding='cardinal_diagonal'):
+def generate_env_description(sequence, view_encoding='cardinal_diagonal'):
     """ Generate a sample of textual descriptions from a sequence """    
-    timestamp = random.randint(0, sequence.n_frames - 1)
+    timestamp = random.randint(0, len(sequence) - 1)
     
     generator = TaskSequencePromptBuilder(sequence, view_encoding)
 
-    prompt = generator.build_prompt(timestamp)
-    action = generator.action_taken(timestamp)
+    prompt = generator.generate_env_description(timestamp)
+    action = generator.get_action_taken(timestamp)
     return prompt, action
