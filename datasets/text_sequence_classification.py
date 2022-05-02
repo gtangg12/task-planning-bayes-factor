@@ -26,7 +26,7 @@ class TextSequenceClassificationDataset(Dataset):
 
 def load_from_dir(path: str, filter_fn: Callable) -> Tuple[List[str], List[int]]:
     filenames = glob.glob(path + '/*.pkl')
-    filenames = filter(filter_fn, filenames)
+    filenames = list(filter(filter_fn, filenames))
     print(filenames)
     exit()
     

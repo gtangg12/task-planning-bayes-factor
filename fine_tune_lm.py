@@ -4,7 +4,6 @@ import torch
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
 from transformers import TrainingArguments, Trainer
-from datasets import load_metric
 
 from babyai.common import *
 from babyai_task_sequence import chunknum_from_path

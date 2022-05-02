@@ -24,7 +24,7 @@ def taskname_from_path(path):
 
 
 def chunknum_from_path(path):
-    return int(path.split('/')[-1].split('_')[1])
+    return int(path.split('/')[-1].split('_')[1].strip('.pkl'))
 
 
 def numeric_encode_task(task):
