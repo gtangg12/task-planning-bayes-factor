@@ -9,6 +9,8 @@ from babyai.common import *
 from datasets.formats.task_sequence import TaskSequence
 
 
+# TODO align with babyai infra i.e. minigrid env to refactor and simplify
+
 EGO_ROW = VIEW_SHAPE[0] - 1
 EGO_COL = VIEW_SHAPE[1] // 2
 EGO = 'E'
