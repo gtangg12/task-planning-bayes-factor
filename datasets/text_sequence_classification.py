@@ -12,8 +12,8 @@ class TextSequenceClassificationDataset(Dataset):
         labels: List[int], 
         tokenize_fn: Callable[[str], Dict],
     ) -> None:
-        self.texts = texts[:100]
-        self.labels = labels[:100]
+        self.texts = texts
+        self.labels = labels
         self.tokenized = list(map(tokenize_fn, tqdm(self.texts)))
 
     def __len__(self) -> int:
@@ -37,6 +37,6 @@ def load_sequences_from_dir(path: str, filter_fn: Callable) -> Tuple[List[str], 
             texts_, labels_ = list(zip(*inputs))
         texts.extend(texts_)
         labels.extend(labels_)
-        
+
     return texts, labels
     

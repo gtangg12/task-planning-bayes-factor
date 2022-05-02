@@ -1,5 +1,3 @@
-from typing import List, Dict, Tuple, Callable
-
 import numpy as np
 import torch
 from transformers import AutoTokenizer
@@ -42,16 +40,18 @@ def compute_metrics(eval_pred):
     }
 
 
-combined_dataset = TextSequenceClassificationDataset(texts, labels, tokenize_fn)
-num_train = int(len(combined_dataset) * 0.85)
+text_sequence_dataset = TextSequenceClassificationDataset(texts, labels, tokenize_fn)
+num_train = int(len(text_sequence_dataset) * 0.85)
 train_dataset, eval_dataset = \
-    torch.utils.data.random_split(combined_dataset, [num_train, len(combined_dataset) - num_train])
+    torch.utils.data.random_split(text_sequence_dataset , [num_train, len(text_sequence_dataset ) - num_train])
 
 
 training_args = TrainingArguments(
     output_dir='checkpoints/babyai_lm', 
-    evaluation_strategy='epoch', 
+    evaluation_strategy='steps', 
     save_strategy='epoch',
+    gradient_accumulation_steps=1, # 1024 effective bs
+    num_train_epochs=5,
 )
 
 trainer = Trainer(
