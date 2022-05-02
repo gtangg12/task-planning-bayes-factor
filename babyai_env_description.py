@@ -141,7 +141,7 @@ class TaskSequencePromptBuilder():
         for frame in sequence.frames:
             action = frame.action.name
             if action == 'pickup':
-                item = location_string(frame.image)
+                item = location_string(frame.image, EGO_ROW - 1, EGO_COL)
             elif action == 'drop':
                 item = None
             inventory_history.append(item)
@@ -151,8 +151,9 @@ class TaskSequencePromptBuilder():
         """ Generate a verbal description of the actor's current state """
         image = self.sequence.frames[timestamp].image
         description = [image_description(image, self.view_partition)]
-        if self.inventory_history[timestamp]:
-            description.append(f'You are carrying a {self.inventory_item}.')
+        inventory_item = self.inventory_history[timestamp]
+        if inventory_item:
+            description.append(f'You are carrying a {inventory_item}.')
         else:
             description.append('You are not carrying anything.')
         return ' '.join(description)
