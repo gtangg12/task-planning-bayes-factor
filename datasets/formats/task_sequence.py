@@ -1,6 +1,6 @@
 from __future__ import annotations 
 from dataclasses import dataclass
-from typing import Type
+from typing import Type, List
 from PIL import Image
 
 
@@ -27,7 +27,7 @@ class TaskSequenceFrame:
 @dataclass
 class TaskSequence:
     task: Type[Task]
-    frames: list[Type[TaskSequenceFrame]]
+    frames: List[Type[TaskSequenceFrame]]
     
     def __len__(self) -> int:
         return len(self.frames)

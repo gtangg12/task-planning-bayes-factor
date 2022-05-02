@@ -1,6 +1,6 @@
 import copy
 import random
-from typing import TypedDict
+from typing import TypedDict, List, Dict
 from dataclasses import asdict
 
 import torch
@@ -43,7 +43,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         return encoded
 
     @classmethod
-    def negative_sample(cls, encoded: dict) -> dict:
+    def negative_sample(cls, encoded: Dict) -> Dict:
         sequence_len = encoded['sequence_len'] 
         suffix_begin = sequence_len - NEGATIVE_SAMPLE_SUFFIX_LEN
 
@@ -58,7 +58,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         return resampled_encoded
 
 
-def collate_fn(batch: list[BabyaiSequenceDict]) -> BabyaiSequenceDict:
+def collate_fn(batch: List[BabyaiSequenceDict]) -> BabyaiSequenceDict:
     batched = {}
     for name in BabyaiSequenceDict.__annotations__.keys():
         batched[name] = collate_list_of_dict(batch, {name})

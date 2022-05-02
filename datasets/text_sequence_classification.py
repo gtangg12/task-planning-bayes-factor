@@ -1,13 +1,13 @@
-from typing import Callable
+from typing import List, Dict, Callable
 from torch.utils.data import Dataset
 
 
 class TextSequenceClassificationDataset(Dataset):
     def __init__(
         self, 
-        texts: list[str], 
-        labels: list[int], 
-        tokenize_fn: Callable[[str], dict],
+        texts: List[str], 
+        labels: List[int], 
+        tokenize_fn: Callable[[str], Dict],
     ) -> None:
         self.texts = texts
         self.labels = labels
@@ -16,7 +16,7 @@ class TextSequenceClassificationDataset(Dataset):
     def __len__(self) -> int:
         return len(self.texts)
 
-    def __getitem__(self, idx: int) -> dict:
+    def __getitem__(self, idx: int) -> Dict:
         data = { 'label', self.labels[idx], 'text', self.texts[idx] }
         data.update(self.tokenized[idx])
         return data

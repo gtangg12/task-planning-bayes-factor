@@ -7,11 +7,11 @@ from datasets.formats.task_sequence import *
 from babyai_task_sequence import BabyaiFrame
 
 
-def format_taskname_babyai(taskname):
+def format_taskname_babyai(taskname: str) -> str:
     return f'BabyAI-{taskname}-v0'
 
 
-def make_env(taskname):
+def make_env(taskname: str) -> gym.Env:
     taskname = format_taskname_babyai(taskname)
     env = gym.make(taskname)
     env.reset()
@@ -19,7 +19,7 @@ def make_env(taskname):
     return env
 
 
-def agent_solve(env):
+def agent_solve(env: gym.Env) -> TaskSequence:
     agent = BotAgent(env)
     sequence = []
     while True:

@@ -1,6 +1,7 @@
 import pickle
 import blosc
 import torch
+from typing import List
 from dataclasses import dataclass
 
 from babyai.common import *
@@ -43,7 +44,7 @@ FEATURE_PROCESS_FN = [
     lambda actions: actions,
 ]
 
-def format_raw_sequence(raw_sequence: list, taskname: str) -> TaskSequence:
+def format_raw_sequence(raw_sequence: List, taskname: str) -> TaskSequence:
     features = [fn(feature) for fn, feature in zip(FEATURE_PROCESS_FN, raw_sequence)]
     features = dict(zip(FEATURE_NAMES, features))
     
@@ -57,7 +58,7 @@ def format_raw_sequence(raw_sequence: list, taskname: str) -> TaskSequence:
     return TaskSequence(task, sequence)
 
 
-def load_sequences(path: str) -> list[TaskSequence]:
+def load_sequences(path: str) -> List[TaskSequence]:
     sequences = pickle.load(open(path, 'rb'))
     taskname = taskname_from_path(path)
     return [format_raw_sequence(sequence, taskname) for sequence in sequences]

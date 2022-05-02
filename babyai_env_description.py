@@ -1,6 +1,7 @@
 import random
-import itertools
 import inspect
+import itertools
+from typing import List, Tuple
 from collections import Counter, defaultdict
 
 import torch
@@ -40,7 +41,7 @@ EGO_VIEW_ENCODINGS = {
 }
 
 
-def make_view_partition(view_encoding: str) -> list[tuple[int, int]]:
+def make_view_partition(view_encoding: str) -> List[Tuple[int, int]]:
     """ Generate view encoding from the perspective of the ego agent.
         Resulting dict: { statement : [(r, c)...] }
     """
@@ -83,7 +84,7 @@ def location_string(image: torch.tensor, r: int, c: int):
     return f'{color} {object}'
 
 
-def region_description(image: torch.Tensor, region: list[tuple[int, int]]) -> str:
+def region_description(image: torch.Tensor, region: List[Tuple[int, int]]) -> str:
     """ Helper function to generate a grammatically correct description of a region, 
         a list of coordinate tuples """
     description = []
@@ -161,7 +162,7 @@ class TaskSequencePromptBuilder():
         return self.sequence.frames[timestamp].action.name
 
 
-def generate_env_description(sequence, view_encoding='cardinal_diagonal'):
+def generate_env_description(sequence: TaskSequence, view_encoding='cardinal_diagonal'):
     """ Generate a sample of textual descriptions from a sequence """    
     timestamp = random.randint(0, len(sequence) - 1)
     

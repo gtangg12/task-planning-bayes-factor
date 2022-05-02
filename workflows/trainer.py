@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Any, Callable, NewType, Optional
+from typing import Any, List, Dict, Callable, NewType, Optional
 
 import torch
 import torch.nn as nn
@@ -13,10 +13,10 @@ from training_args import TrainingArguments
 # TODO figure out how to make inputdata consistent
 InputData = NewType('InputDataClass', Any)
 
-DataCollator = Callable[[list[InputData]], dict[str, Any]]
+DataCollator = Callable[[List[InputData]], Dict[str, Any]]
 
 Loss = float
-OutputDataList, LabelDataList = list[InputData], list[Any]
+OutputDataList, LabelDataList = List[InputData], List[Any]
 Prediction = [Loss, OutputDataList, LabelDataList, Dataset]
 
 
@@ -31,7 +31,7 @@ class Trainer:
         data_collator: Optional[DataCollator] = None,
         train_dataset: Optional[Dataset] = None,
         eval_dataset: Optional[Dataset] = None,
-        compute_metrics: Optional[Callable[[Prediction], dict]] = None,
+        compute_metrics: Optional[Callable[[Prediction], Dict]] = None,
         criterion: Optional[Callable[[InputData, InputData], Loss]] = None,
         optimizer: Optional[torch.optim.Optimizer] = None,
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None
