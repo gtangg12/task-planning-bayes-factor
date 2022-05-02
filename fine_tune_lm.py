@@ -17,7 +17,7 @@ from datasets.text_sequence_classification import (
 NUM_CLASSES = len(ACTIONS)
 NUM_CHUNKS = 2
 
-filter_fn = lambda filename: chunknum_from_path(filename) <= NUM_CHUNKS
+filter_fn = lambda filename: chunknum_from_path(filename) < NUM_CHUNKS
 texts, labels = load_from_dir('data/babyai/env_description_chunked', filter_fn)
 
 tokenizer = AutoTokenizer.from_pretrained('gpt2', use_fast=True)
