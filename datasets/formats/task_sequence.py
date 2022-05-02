@@ -37,4 +37,7 @@ class TaskSequence:
 
     def __getitem__(self, idx) -> Type[TaskSequenceFrame]:
         return self.frames[idx]
+    
+    def prefix_sequence(self, n: int) -> TaskSequence:
+        return TaskSequence(self.task, self.frames[:n])
 

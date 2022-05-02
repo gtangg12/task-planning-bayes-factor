@@ -1,4 +1,6 @@
-from typing import List, Dict, Callable
+import pickle
+import glob
+from typing import List, Dict, Tuple, Callable
 from torch.utils.data import Dataset
 
 
@@ -21,3 +23,20 @@ class TextSequenceClassificationDataset(Dataset):
         data.update(self.tokenized[idx])
         return data
 
+
+def load_from_dir(path: str, filter_fn: Callable) -> Tuple[List[str], List[int]]:
+    filenames = glob.glob(path + '/*.pkl')
+    filenames = filter(filter_fn, filenames)
+    print(filenames)
+    exit()
+    
+    texts, labels = [], []
+    
+    for filename in filenames:
+        with open(filename, 'rb') as f:
+            texts_, labels_ = pickle.load(f)
+        texts.extend(texts_)
+        labels.extend(labels_)
+
+    return texts, labels
+    
