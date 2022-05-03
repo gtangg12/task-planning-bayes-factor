@@ -52,8 +52,9 @@ def load_text_sequences_from_dir(
     if shuffle:
         random.shuffle(texts)
         random.shuffle(labels)
+
     if num_data:
         texts, labels = texts[:num_data], labels[:num_data]
-        
+
     return texts, labels
     
