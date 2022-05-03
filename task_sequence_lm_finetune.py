@@ -21,7 +21,7 @@ NUM_CHUNKS = 1
 
 # Load data 
 filter_fn = lambda filename: chunknum_from_path(filename) < NUM_CHUNKS
-texts, labels = load_text_sequences_from_dir(f'{FULLPATH}/data/babyai/env_description_chunked', num_data=128, filter_fn=filter_fn)
+texts, labels = load_text_sequences_from_dir(f'{FULLPATH}/data/babyai/env_description_chunked', filter_fn=filter_fn)
 
 # numeric encode actions
 labels = list(map(lambda action: ACTIONS_TO_INDEX[action], labels))
