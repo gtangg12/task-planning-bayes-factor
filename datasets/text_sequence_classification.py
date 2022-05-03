@@ -1,15 +1,21 @@
 import pickle
 import glob
-from typing import List, Dict, Tuple, Callable
+import random
+from typing import List, Dict, Tuple, Callable, Optional
+
 from torch.utils.data import Dataset
 from tqdm import tqdm
+
+
+Texts = List[str]
+NumericLabels = List[int]
 
 
 class TextSequenceClassificationDataset(Dataset):
     def __init__(
         self, 
-        texts: List[str], 
-        labels: List[int], 
+        texts: Texts, 
+        labels: NumericLabels, 
         tokenize_fn: Callable[[str], Dict],
     ) -> None:
         self.texts = texts
@@ -25,18 +31,29 @@ class TextSequenceClassificationDataset(Dataset):
         return data
 
 
-def load_sequences_from_dir(path: str, filter_fn: Callable) -> Tuple[List[str], List[int]]:
+def load_text_sequences_from_dir(
+    path: str, 
+    shuffle: bool = True, 
+    num_data: Optional[int] = None,
+    filter_fn: Optional[Callable] = None) -> Tuple[Texts, NumericLabels]:
+
     filenames = glob.glob(path + '/*.pkl')
-    filenames = list(filter(filter_fn, filenames))
+    if filter_fn:
+        filenames = list(filter(filter_fn, filenames))
 
     texts, labels = [], []
-
     for filename in filenames:
         with open(filename, 'rb') as f:
             inputs = pickle.load(f)
             texts_, labels_ = list(zip(*inputs))
         texts.extend(texts_)
         labels.extend(labels_)
-
+    
+    if shuffle:
+        random.shuffle(texts)
+        random.shuffle(labels)
+    if num_data:
+        texts, labels = texts[:num_data], labels[:num_data]
+        
     return texts, labels
     

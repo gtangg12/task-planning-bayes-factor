@@ -3,11 +3,11 @@
 #SBATCH -o fine_tune_lm.out
 #SBATCH -e fine_tune_lm.err
 #SBATCH --mail-user=gtangg12@mit.edu
-#SBATCH --mail-type=ALL
+#SBATCH --mail-type=NONE
 #SBATCH --gres=gpu:1
 #SBATCH --gpus-per-node=1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
+#SBATCH --ntasks-per-node=1
 #SBATCH --mem=128GB
 #SBATCH --time=8:00:00
 #SBATCH --exclusive
@@ -46,7 +46,7 @@ echo " Run started at:- "
 date
 
 ## Horovod execution
-horovodrun -np $SLURM_NTASKS -H `cat $NODELIST` python /nobackup/users/gtangg12/task_planning_bayes_factor/finetune_task_sequence_lm.py
+horovodrun -np $SLURM_NTASKS -H `cat $NODELIST` python /nobackup/users/gtangg12/task_planning_bayes_factor/task_sequence_lm_finetune.py
 
 echo "Run completed at:- "
 date

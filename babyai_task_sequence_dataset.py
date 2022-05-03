@@ -26,6 +26,11 @@ class BabyaiSequenceDict(TypedDict):
 
 
 class BabyaiSequenceDataset(TaskCompletitionDataset):
+    """ Dataset for valid babyai task sequence classification. 
+    """
+    # used to specify classifier embedding dim
+    SEQUENCE_HISTORY_EMBEDDING_DIM = 128
+
     @classmethod
     def encode(cls, sequence: TaskSequence) -> BabyaiSequenceDict:
         encoded = {}
@@ -39,6 +44,10 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
             encoded[feature_name] = \
                 collate_list_of_dict(sequence['frames'][feature_name], map_list_as_tensor=True)   
         encoded['images'].permute(0, 3, 1, 2)  # HWC to CHW
+
+        # embedding_dim = cls.SEQUENCE_HISTORY_EMBEDDING_DIM
+        # tensor passed into model
+        encoded['sequence_history'] = 
 
         return encoded
 
