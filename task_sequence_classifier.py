@@ -78,7 +78,7 @@ class ClassifierFilmRNN(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, inputs: TaskSequenceBatch): 
+    def forward(self, inputs): 
         #task, actor_info, images, task_len, seq_len
         #torch.Size([8, 32, 128]) torch.Size([8, 7, 128]) torch.Size([8, 7, 19, 7, 7]) torch.Size([8]) torch.Size([8])
         task_batch, images_batch, actions_batch = inputs['task'], inputs['images'], inputs['actions']
@@ -122,3 +122,7 @@ class ClassifierFilmRNN(nn.Module):
         output, _ = rnn(input)
         output, _ = pad_packed_sequence(output, batch_first=True)
         return output
+
+
+if __name__ == '__main__':
+    pass

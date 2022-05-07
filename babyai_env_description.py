@@ -11,8 +11,6 @@ from babyai.common import *
 from datasets.formats.task_sequence import TaskSequence
 
 
-# TODO align with babyai infra i.e. minigrid env to refactor and simplify
-
 EGO_ROW = VIEW_SHAPE[0] - 1
 EGO_COL = VIEW_SHAPE[1] // 2
 EGO = 'E'
@@ -173,3 +171,11 @@ def generate_env_description(sequence: TaskSequence, view_encoding='cardinal_dia
     prompt = generator.generate_env_description(timestamp)
     action = generator.get_action_taken(timestamp)
     return prompt, action
+
+
+if __name__ == '__main__':
+    from babyai_task_sequence import load_sequences
+    sequences = load_sequences('data/babyai/task_sequence_chunked/Goto_000.pkl')
+    for sequence in sequences[:10]:
+        print(generate_env_description(sequence))
+        

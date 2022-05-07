@@ -4,7 +4,7 @@ from typing import List, Dict, TypedDict
 import torch
 from torch.utils.data import Dataset
 
-from formats.task_sequence import TaskSequence
+from datasets.formats.task_sequence import TaskSequence
 
 
 class TaskSequenceDict(TypedDict):

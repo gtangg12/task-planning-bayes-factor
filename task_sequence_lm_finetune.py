@@ -79,6 +79,7 @@ if __name__ == '__main__':
             'accuracy': classification_accuracy(preds, labels),
             'labels_freq': label_frequency(labels),
             'preds_freq': label_frequency(preds),
+            'logits': torch.mean(logits, dim=0),
         }
 
 
@@ -91,7 +92,13 @@ if __name__ == '__main__':
     train_dataset, eval_dataset = \
         torch.utils.data.random_split(text_sequence_dataset , [num_train, num_eval])
         
-
+    cnt = 0
+    for x in train_dataset:
+        print(x)
+        cnt += 1
+        if cnt > 10:
+            exit()
+    
     # Training 
     # WARNING: huggingface trainer will use all gpus on device
     training_args = TrainingArguments(

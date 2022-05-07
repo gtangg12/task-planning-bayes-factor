@@ -34,7 +34,10 @@ def numeric_encode_task(task):
 
 def unpack_images(images):
     unpacked = blosc.unpack_array(images)
-    return torch.from_numpy(unpacked)
+    unpacked = torch.from_numpy(unpacked) 
+    # transpose height, width since stored images are WHC
+    unpacked = unpacked.permute(0, 2, 1, 3)
+    return unpacked
 
 
 FEATURE_PROCESS_FN = [

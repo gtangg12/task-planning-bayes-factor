@@ -25,27 +25,27 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
 
     @classmethod
     def encode(cls, sequence: TaskSequence) -> TaskSequenceDict:
-        encoded = {}
-        sequence_len = len(sequence)
-        sequence = asdict(sequence)
-        
-        encoded['taskname'] = sequence['task']['name']
-        encoded['task'] = numeric_encode_task(sequence['task']['description'])
-        encoded['task_len'] = len(encoded['task']) # sequence is str, encoded['task] is split
-        encoded['sequence_len'] = sequence_len
-        for feature_name, num_classes in zip(
-            FEATURE_NAMES[1:], 
-            [NUM_VIEW_FEATURES, NUM_ACTIONS, NUM_DIRECTIONS]
-        ):
-            collated_feature = collate_list_of_dict(sequence['frames'][feature_name], map_list_as_tensor=True)   
-            encoded[feature_name] = F.one_hot(collated_feature, num_classes)
+        encoded = {
+            'taskname': sequence.taskname,
+            'task': numeric_encode_task(sequence.task),
+            'sequence': len(sequence),
+        }
+        # sequence is str, encoded['task] is split into tokens
+        encoded['task_len'] = len(encoded['task']) 
 
+        collated_features = collate_list_of_dict(
+            list(map(asdict, sequence.frames)), {'images', 'directions', 'actions'}, map_list_as_tensor=True
+        )  
+        encoded['images'] = F.one_hot(collated_features['images'], NUM_VIEW_FEATURES)
+        encoded['directions'] = F.one_hot(collated_features['directions'], NUM_DIRECTIONS)
+        encoded['actions'] = F.one_hot(collated_features['actions'], NUM_ACTIONS)
+        
         # HWC to CHW (torch nn format)
         encoded['images'].permute(0, 3, 1, 2)  
 
         # merge directions into actions into tensor of size (sequence_len, EMBEDDING_DIM)
         encoded['actions'] = torch.cat((encoded['actions'], encoded['directions']), dim=1)
-        assert(encoded['actions'].shape == (sequence_len, cls.EMBEDDING_DIM))
+        assert(encoded['actions'].shape == (len(sequence), cls.EMBEDDING_DIM))
         encoded.pop('directions')
 
         return TaskSequenceDict(encoded)
@@ -81,4 +81,6 @@ def collate_fn(batch: List[TaskSequenceDict]) -> Dict:
 
 
 if __name__ == '__main__':
-    pass
+    from babyai_task_sequence import load_sequences
+    sequences = load_sequences('data/babyai/task_sequence_chunked/Goto_000.pkl')
+    dataset = BabyaiSequenceDataset(sequences)
