@@ -138,12 +138,11 @@ class TaskSequencePromptBuilder():
         inventory_history = []
         item = None
         for frame in sequence.frames:
-            action = frame.action.name
-            if action == 'pickup':
-                item = location_string(frame.image, EGO_ROW - 1, EGO_COL)
-            elif action == 'drop':
-                item = None
             inventory_history.append(item)
+            if frame.action.name == 'pickup':
+                item = location_string(frame.image, EGO_ROW - 1, EGO_COL)
+            elif frame.action.name == 'drop':
+                item = None
         return inventory_history
   
     def generate_env_description(self, timestamp: int) -> str:
@@ -175,7 +174,7 @@ def generate_env_description(sequence: TaskSequence, view_encoding='cardinal_dia
 
 if __name__ == '__main__':
     from babyai_task_sequence import load_sequences
-    sequences = load_sequences('data/babyai/task_sequence_chunked/Goto_000.pkl')
+    sequences = load_sequences('data/babyai/task_sequence_chunked/BossLevel_000.pkl')
     for sequence in sequences[:10]:
         print(generate_env_description(sequence))
         

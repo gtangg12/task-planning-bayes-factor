@@ -26,25 +26,18 @@ def load_from_dir(path, filter_fn=None, shuffle=True, num_data=None):
     filenames = glob.glob(path + '/*.pkl')
     if filter_fn:
         filenames = list(filter(filter_fn, filenames))
-
-    texts, labels, tasknames = [], [], []
+        
+    inputs = []
     for filename in filenames:
         with open(filename, 'rb') as f:
-            inputs = pickle.load(f)
-            texts_, labels_, tasknames_ = list(zip(*inputs))
-        texts.extend(texts_)
-        labels.extend(labels_)
-        tasknames.extend(tasknames_)
-    
+            _inputs = pickle.load(f)
+        inputs.extend(_inputs)
     if shuffle:
-        random.shuffle(texts)
-        random.shuffle(labels)
-        random.shuffle(tasknames)
-
+        random.shuffle(inputs)
     if num_data:
-        texts, labels, tasknames = \
-            texts[:num_data], labels[:num_data], tasknames[:num_data]
-
+        inputs = inputs[:num_data]
+        
+    texts, labels, tasknames = list(zip(*inputs))
     return texts, labels, tasknames
     
 
@@ -55,6 +48,7 @@ if __name__ == '__main__':
         filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS
     )
     # numerically encode actions
+    print(ACTIONS_TO_INDEX)
     labels = list(map(lambda action: ACTIONS_TO_INDEX[action], labels))
 
     
@@ -96,7 +90,7 @@ if __name__ == '__main__':
     for x in train_dataset:
         print(x)
         cnt += 1
-        if cnt > 10:
+        if cnt > 20:
             exit()
     
     # Training 
