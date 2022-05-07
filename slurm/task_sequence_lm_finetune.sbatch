@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J task_sequence_finetune_lm
-#SBATCH -o task_sequence_finetune_lm.out
-#SBATCH -e task_sequence_finetune_lm.err
+#SBATCH -J task_sequence_lm_finetune
+#SBATCH -o task_sequence_lm_finetune.out
+#SBATCH -e task_sequence_lm_finetune.err
 #SBATCH --mail-user=gtangg12@mit.edu
 #SBATCH --mail-type=NONE
 #SBATCH --gres=gpu:4

@@ -26,7 +26,7 @@ def load_from_dir(path, filter_fn=None, shuffle=True, num_data=None):
     filenames = glob.glob(path + '/*.pkl')
     if filter_fn:
         filenames = list(filter(filter_fn, filenames))
-        
+
     inputs = []
     for filename in filenames:
         with open(filename, 'rb') as f:
@@ -73,7 +73,6 @@ if __name__ == '__main__':
             'accuracy': classification_accuracy(preds, labels),
             'labels_freq': label_frequency(labels),
             'preds_freq': label_frequency(preds),
-            'logits': torch.mean(logits, dim=0),
         }
 
 
@@ -85,13 +84,6 @@ if __name__ == '__main__':
 
     train_dataset, eval_dataset = \
         torch.utils.data.random_split(text_sequence_dataset , [num_train, num_eval])
-        
-    cnt = 0
-    for x in train_dataset:
-        print(x)
-        cnt += 1
-        if cnt > 20:
-            exit()
     
     # Training 
     # WARNING: huggingface trainer will use all gpus on device

@@ -17,7 +17,11 @@ class BabyaiFrame(TaskSequenceFrame):
     def __repr__(self) -> str:
         return f'BabyaiFrame(img: {self.image.shape}, ' + \
             f'action: {self.action.name}, dir: {DIRECTIONS[self.direction]})'
-        
+
+@dataclass 
+class BabyaiTaskSequence(TaskSequence):
+    frames: List[BabyaiFrame]
+
 
 def taskname_from_path(path):
     return path.split('/')[-1].split('_')[0]

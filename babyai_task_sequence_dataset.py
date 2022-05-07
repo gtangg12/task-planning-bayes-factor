@@ -5,14 +5,18 @@ from dataclasses import asdict
 
 import torch
 import torch.nn.functional as F
-from torch.nn.utils.rnn import pad_sequence
 
 from babyai.common import *
 
-from datasets.formats.task_sequence import TaskSequence
-from datasets.task_sequence_dataset import TaskCompletitionDataset, TaskSequenceDict
 from datasets.data_collator import collate_list_of_dict
-from babyai_task_sequence import numeric_encode_task
+from datasets.task_sequence_dataset import (
+    TaskCompletitionDataset, 
+    TaskSequenceDict
+)
+from babyai_task_sequence import (
+    BabyaiTaskSequence, 
+    numeric_encode_task
+)
 
 
 class BabyaiSequenceDataset(TaskCompletitionDataset):
@@ -24,7 +28,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
     NEGATIVE_SAMPLE_SUFFIX_LEN = 1
 
     @classmethod
-    def encode(cls, sequence: TaskSequence) -> TaskSequenceDict:
+    def encode(cls, sequence: BabyaiTaskSequence) -> TaskSequenceDict:
         encoded = {
             'taskname': sequence.taskname,
             'task': numeric_encode_task(sequence.task),
@@ -65,19 +69,6 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         # Replace suffix with corrupted actions
         resampled_encoded['actions'][suffix_begin:] = resampled_actions
         return resampled_encoded
-
-
-def collate_fn(batch: List[TaskSequenceDict]) -> Dict:
-    batched = { 
-        'task_len': [], 'sequence_len': [] 
-    }
-    for name in TaskSequenceDict.__annotations__.keys():
-        batched[name] = collate_list_of_dict(batch, {name})
-        if name != 'taskname': 
-            batched[name] = pad_sequence(batched[name], batch_first=True)
-        batched['task_len'].append(batch['task'].shape[0])
-        batched['sequence_len'].append(batch['images'].shape[0])
-    return batched
 
 
 if __name__ == '__main__':

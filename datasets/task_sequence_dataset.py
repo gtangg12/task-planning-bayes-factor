@@ -3,8 +3,10 @@ from typing import List, Dict, TypedDict
 
 import torch
 from torch.utils.data import Dataset
+from torch.nn.utils.rnn import pad_sequence
 
 from datasets.formats.task_sequence import TaskSequence
+from data_collator import collate_list_of_dict
 
 
 class TaskSequenceDict(TypedDict):
@@ -47,3 +49,16 @@ class TaskCompletitionDataset(TaskSequenceDataset):
     @classmethod
     def negative_sample(cls, sequence: TaskSequenceDict) -> TaskSequenceDict:
        raise NotImplementedError
+
+
+def collate_fn(batch: List[TaskSequenceDict]) -> Dict:
+    batched = { 
+        'task_len': [], 'sequence_len': [] 
+    }
+    for name in TaskSequenceDict.__annotations__.keys():
+        batched[name] = collate_list_of_dict(batch, {name})
+        if name != 'taskname': 
+            batched[name] = pad_sequence(batched[name], batch_first=True)
+        batched['task_len'].append(batch['task'].shape[0])
+        batched['sequence_len'].append(batch['images'].shape[0])
+    return batched
