@@ -78,3 +78,7 @@ def collate_fn(batch: List[TaskSequenceDict]) -> Dict:
         batched['task_len'].append(batch['task'].shape[0])
         batched['sequence_len'].append(batch['images'].shape[0])
     return batched
+
+
+if __name__ == '__main__':
+    pass

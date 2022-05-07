@@ -2,11 +2,13 @@ from typing import Callable
 
 from metrics.classification_metrics import (
     accuracy,
+    label_frequency,
 )
 
 
 CLASSIFICATION_METRICS = {
     'accuracy': accuracy,
+    'label_frequency': label_frequency,
 }
 
 

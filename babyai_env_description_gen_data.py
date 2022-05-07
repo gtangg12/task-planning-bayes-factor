@@ -2,7 +2,6 @@
 """
 
 import os
-import sys
 import itertools
 import argparse
 import glob
@@ -11,18 +10,19 @@ import multiprocessing
 
 from babyai.common import *
 
-from babyai_task_sequence import load_sequences
+from babyai_task_sequence import load_sequences, taskname_from_path
 from babyai_env_description import generate_env_description
 
 
 def generate_samples(path, args):
+    taskname = taskname_from_path(path)
     filename = path.split('/')[-1]
     print(f'Generating samples from {filename}...')
     
     sequences = load_sequences(path)
     texts = []
     for sequence in sequences:
-        texts.append(generate_env_description(sequence, args.view_encoding))
+        texts.append((*generate_env_description(sequence, args.view_encoding), taskname))
     pickle.dump(texts, open(f'{args.output_dir}/{filename}', 'wb'))
 
     print(f'Done: {filename}')

@@ -5,6 +5,7 @@ from typing import List, Tuple
 from collections import Counter, defaultdict
 
 import torch
+
 from babyai.common import *
 
 from datasets.formats.task_sequence import TaskSequence

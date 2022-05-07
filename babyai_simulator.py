@@ -33,7 +33,7 @@ def agent_solve(env: gym.Env) -> TaskSequence:
     return TaskSequence(Task(env.taskname, obs['mission']), sequence)
 
 
-class BabyaiRenderEngine:
+class BabyaiEnvRenderer:
     def __init__(self, env: gym.Env = None) -> None:
         self.env = env
         self.window = Window('gym_minigrid')
@@ -77,5 +77,5 @@ class BabyaiRenderEngine:
 if __name__ == '__main__':
     env = make_env('GoTo')
     sequence = agent_solve(env)
-    engine = BabyaiRenderEngine(env)
+    engine = BabyaiEnvRenderer(env)
     engine.render_image(sequence.frames[0].image)

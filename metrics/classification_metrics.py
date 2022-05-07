@@ -1,18 +1,25 @@
 import torch
 
 
-def accuracy(outputs, labels):
+def accuracy(preds: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
     """ Computes the accuracy of a batch of predictions.
     Args:
-        preds: (batch_size, num_classes) tensor of logits
-        labels: (batch_size) tensor of labels
+        preds: (num_data, num_classes) tensor of logits
+        labels: (num_data) tensor of labels
     Returns:
         accuracy: scalar tensor of accuracy
     """
-    _, preds = torch.max(outputs, dim=1)
-    print(labels, preds)
     return torch.mean((preds == labels).float())
 
+
+def label_frequency(labels: torch.Tensor) -> torch.Tensor:
+    """ Computes the frequency of each label in a batch.
+    Args:
+        labels: (num_data) tensor of labels
+    Returns:
+        freq: (num_classes) tensor where index i is the frequency of label i
+    """
+    return torch.bincount(labels)
 
 
 
