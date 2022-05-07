@@ -41,7 +41,7 @@ class TaskCompletitionDataset(TaskSequenceDataset):
     def __getitem__(self, idx: int) -> Dict:
         sequence = self.sequences[idx]
         sequence['label'] = True
-        if random.random() > self.negative_sample_rate:
+        if random.random() < self.negative_sample_rate:
             sequence = self.negative_sample(sequence)
             sequence['label'] = False
         return sequence

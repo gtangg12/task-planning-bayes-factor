@@ -73,6 +73,11 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         resampled_encoded = copy.deepcopy(encoded)
         resampled_actions = torch.randint(0, NUM_ACTIONS, (cls.NEGATIVE_SAMPLE_SUFFIX_LEN,))
 
+        print(sequence_len)
+        print(suffix_begin)
+        print(resampled_actions)
+        exit()
+
         # Guarantee at least one different action in new sequence
         idx = random.randint(suffix_begin, sequence_len)
         while resampled_actions[idx] == encoded['actions'][idx]:
@@ -86,4 +91,6 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
 if __name__ == '__main__':
     from babyai_task_sequence import load_sequences
     sequences = load_sequences('data/babyai/task_sequence_chunked/GoTo_000.pkl')
-    dataset = BabyaiSequenceDataset(sequences)
+    dataset = BabyaiSequenceDataset(sequences, negative_sample_rate=1)
+
+    x = dataset[0]
