@@ -26,7 +26,9 @@ class TextSequenceClassificationDataset(Dataset):
         return len(self.texts)
 
     def __getitem__(self, idx: int) -> TextLabelDict:
-        data = { 'label': self.labels[idx], 'text': self.texts[idx] }
+        data = { 
+            'text': self.texts[idx], 'label': self.labels[idx] 
+        }
         # tokenized dict has keys 'input_ids', 'attention_mask'
         data.update(self.tokenized[idx])
         return data

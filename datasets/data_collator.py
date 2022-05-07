@@ -1,5 +1,5 @@
 import json
-from typing import List, Dict, Set
+from typing import List, Dict, Iterable
 
 import torch
 
@@ -10,7 +10,7 @@ def object_to_json(obj: object) -> dict:
     )
 
 
-def collate_list_of_dict(batch: List[Dict], keys: Set, map_list_as_tensor: bool = False) -> Dict:
+def collate_list_of_dict(batch: List[Dict], keys: Iterable, map_list_as_tensor: bool = False) -> Dict:
     collated = {}
     for key in keys:
         collated[key] = [elm[key] for elm in batch]

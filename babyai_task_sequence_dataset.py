@@ -27,22 +27,31 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
     # length of suffix of actions to corrupt for negative sample
     NEGATIVE_SAMPLE_SUFFIX_LEN = 1
 
+    ENCODED_FEATURE_NAMES = ['images', 'directions', 'actions']
+    ENCODED_FEATURE_NUM_CLASSES = [NUM_VIEW_FEATURES, NUM_DIRECTIONS, NUM_ACTIONS]
+
     @classmethod
     def encode(cls, sequence: BabyaiTaskSequence) -> TaskSequenceDict:
-        encoded = {
-            'taskname': sequence.taskname,
-            'task': numeric_encode_task(sequence.task),
-            'sequence': len(sequence),
-        }
-        # sequence is str, encoded['task] is split into tokens
+        encoded = {}
+        encoded['taskname'] = sequence.task.name
+        encoded['task'] = numeric_encode_task(sequence.task.description)
         encoded['task_len'] = len(encoded['task']) 
+        encoded['sequence_len'] = len(sequence)
 
+        # convert list frames objects to list of correspoding dicts
+        frame_dicts = list(map(asdict, sequence.frames))
+
+        print(frame_dicts)
+        exit()
+
+        # collate respective frame features into one dict`
         collated_features = collate_list_of_dict(
-            list(map(asdict, sequence.frames)), {'images', 'directions', 'actions'}, map_list_as_tensor=True
+            frame_dicts, cls.ENCODED_FEATURE_NAMES, map_list_as_tensor=True
         )  
-        encoded['images'] = F.one_hot(collated_features['images'], NUM_VIEW_FEATURES)
-        encoded['directions'] = F.one_hot(collated_features['directions'], NUM_DIRECTIONS)
-        encoded['actions'] = F.one_hot(collated_features['actions'], NUM_ACTIONS)
+
+        # one hot encode features
+        for name, num_classes in zip(cls.ENCODED_FEATURE_NAMES, cls.ENCODED_FEATURE_NUM_CLASSES):
+            encoded[name] = F.one_hot(collated_features[name], num_classes)
         
         # HWC to CHW (torch nn format)
         encoded['images'].permute(0, 3, 1, 2)  
@@ -73,5 +82,5 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
 
 if __name__ == '__main__':
     from babyai_task_sequence import load_sequences
-    sequences = load_sequences('data/babyai/task_sequence_chunked/Goto_000.pkl')
+    sequences = load_sequences('data/babyai/task_sequence_chunked/GoTo_000.pkl')
     dataset = BabyaiSequenceDataset(sequences)
