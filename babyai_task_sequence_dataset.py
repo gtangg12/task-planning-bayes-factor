@@ -13,48 +13,50 @@ from datasets.task_sequence_dataset import (
     TaskCompletitionDataset, 
     TaskSequenceDict
 )
-from babyai_task_sequence import (
-    BabyaiTaskSequence, 
-    numeric_encode_task
-)
+from babyai_task_sequence import BabyaiTaskSequence
+
+
+def encode_babyai_task(task):
+    """ Numerically encode the words of task str """
+    words = task.replace(',', '').split(' ')
+    return torch.tensor([VOCAB_TO_INDEX[w] for w in words])
+
+
+def encode_babyai_images(images):
+    """ One-hot encode the image sequence's channels separately and concat them """
+    channels = list(torch.split(images, 1, dim=-1))
+    for i, c in enumerate(channels):
+        channels[i] = F.one_hot(c.squeeze().long(), NUM_VIEW_FEATURES_LIST[i])
+    encoded_images = torch.cat(channels, dim=-1)
+    # HWC to CHW (torch nn format)
+    return torch.permute(encoded_images, (0, 3, 1, 2))
 
 
 class BabyaiSequenceDataset(TaskCompletitionDataset):
-    """ Dataset for valid babyai task sequence classification. 
-    """
+    """ Dataset for valid babyai task sequence classification """
     # used to specify classifier embedding dim
     EMBEDDING_DIM = NUM_ACTIONS + NUM_DIRECTIONS
     # length of suffix of actions to corrupt for negative sample
     NEGATIVE_SAMPLE_SUFFIX_LEN = 1
 
-    ENCODED_FEATURE_NAMES = ['images', 'directions', 'actions']
-    ENCODED_FEATURE_NUM_CLASSES = [NUM_VIEW_FEATURES, NUM_DIRECTIONS, NUM_ACTIONS]
-
     @classmethod
     def encode(cls, sequence: BabyaiTaskSequence) -> TaskSequenceDict:
         encoded = {}
         encoded['taskname'] = sequence.task.name
-        encoded['task'] = numeric_encode_task(sequence.task.description)
+        encoded['task'] = encode_babyai_task(sequence.task.description)
         encoded['task_len'] = len(encoded['task']) 
         encoded['sequence_len'] = len(sequence)
 
-        # convert list frames objects to list of correspoding dicts
-        frame_dicts = list(map(asdict, sequence.frames))
-
-        print(frame_dicts)
-        exit()
-
-        # collate respective frame features into one dict`
-        collated_features = collate_list_of_dict(
-            frame_dicts, cls.ENCODED_FEATURE_NAMES, map_list_as_tensor=True
-        )  
-
-        # one hot encode features
-        for name, num_classes in zip(cls.ENCODED_FEATURE_NAMES, cls.ENCODED_FEATURE_NUM_CLASSES):
-            encoded[name] = F.one_hot(collated_features[name], num_classes)
+        images, directions, actions = [], [], []
+        for frame in sequence:
+            images.append(frame.image)
+            directions.append(frame.direction)
+            actions.append(ACTIONS_TO_INDEX[frame.action.name])
         
-        # HWC to CHW (torch nn format)
-        encoded['images'].permute(0, 3, 1, 2)  
+        # one hot encode features
+        encoded['directions'] = F.one_hot(torch.tensor(directions), NUM_DIRECTIONS)
+        encoded['actions'] = F.one_hot(torch.tensor(actions), NUM_ACTIONS)
+        encoded['images'] = encode_babyai_images(torch.stack(images))
 
         # merge directions into actions into tensor of size (sequence_len, EMBEDDING_DIM)
         encoded['actions'] = torch.cat((encoded['actions'], encoded['directions']), dim=1)

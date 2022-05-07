@@ -90,10 +90,10 @@ if __name__ == '__main__':
     training_args = TrainingArguments(
         output_dir=f'{FULLPATH}/checkpoints/babyai_lm', 
         evaluation_strategy='steps', 
-        eval_steps=512,
+        eval_steps=128,
         save_strategy='epoch',
-        gradient_accumulation_steps=4, 
-        num_train_epochs=5,
+        gradient_accumulation_steps=64, 
+        num_train_epochs=10,
         per_device_train_batch_size=4,
         per_device_eval_batch_size=4,
     )

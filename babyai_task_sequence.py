@@ -31,11 +31,6 @@ def chunknum_from_path(path):
     return int(path.split('/')[-1].split('_')[1].strip('.pkl'))
 
 
-def numeric_encode_task(task):
-    words = task.replace(',', '').split(' ')
-    return torch.tensor([VOCAB_TO_INDEX[w] for w in words])
-
-
 def unpack_images(images):
     unpacked = blosc.unpack_array(images)
     unpacked = torch.from_numpy(unpacked) 
@@ -44,16 +39,9 @@ def unpack_images(images):
     return unpacked
 
 
-FEATURE_PROCESS_FN = [
-    lambda task: task,
-    unpack_images,
-    torch.tensor,
-    lambda actions: actions,
-]
-
 def format_raw_sequence(raw_sequence: List, taskname: str) -> TaskSequence:
-    features = [fn(feature) for fn, feature in zip(FEATURE_PROCESS_FN, raw_sequence)]
-    features = dict(zip(FEATURE_NAMES, features))
+    features = dict(zip(FEATURE_NAMES, raw_sequence))
+    features['images'] = unpack_images(features['images'])
     
     task = Task(taskname, features['task'])
     sequence = []
@@ -72,7 +60,7 @@ def load_sequences(path: str) -> List[TaskSequence]:
 
 
 if __name__ == '__main__':
-    sequences = load_sequences('data/babyai/task_sequence_chunked/Goto_000.pkl')
+    sequences = load_sequences('data/babyai/task_sequence_chunked/GoTo_000.pkl')
     for sequence in sequences:
         print(sequence[1:5])
         print(sequence.frames[0])
