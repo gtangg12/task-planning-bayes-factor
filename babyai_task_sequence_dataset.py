@@ -24,10 +24,10 @@ def encode_babyai_task(task):
 
 def encode_babyai_images(images):
     """ One-hot encode the image sequence's channels separately and concat them """
-    channels = list(torch.split(images, 1, dim=-1))
+    channels = list(torch.split(images, 1, dim=3))
     for i, c in enumerate(channels):
-        channels[i] = F.one_hot(c.squeeze().long(), NUM_VIEW_FEATURES_LIST[i])
-    encoded_images = torch.cat(channels, dim=-1)
+        channels[i] = F.one_hot(c.squeeze(dim=3).long(), NUM_VIEW_FEATURES_LIST[i])
+    encoded_images = torch.cat(channels, dim=3)
     # HWC to CHW (torch nn format)
     return torch.permute(encoded_images, (0, 3, 1, 2))
 
@@ -47,6 +47,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         encoded['task_len'] = len(encoded['task']) 
         encoded['sequence_len'] = len(sequence)
 
+        # aggregate features
         images, directions, actions = [], [], []
         for frame in sequence:
             images.append(frame.image)
