@@ -1,6 +1,6 @@
 from typing import Callable
 
-from metrics.classification import (
+from metrics.classification_metrics import (
     accuracy,
 )
 

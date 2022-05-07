@@ -6,7 +6,7 @@ from transformers import TrainingArguments, Trainer
 from babyai.common import *
 from babyai_task_sequence import chunknum_from_path
 
-from datasets.text_sequence_classification import (
+from datasets.text_sequence_classification_dataset import (
     TextSequenceClassificationDataset,
     load_text_sequences_from_dir
 )
@@ -14,7 +14,6 @@ from metrics import load_metric
 
 
 FULLPATH = '/nobackup/users/gtangg12/task_planning_bayes_factor'
-
 NUM_CLASSES = len(ACTIONS)
 NUM_CHUNKS = 1
 
@@ -62,7 +61,7 @@ training_args = TrainingArguments(
     evaluation_strategy='steps', 
     eval_steps=256,
     save_strategy='epoch',
-    gradient_accumulation_steps=8, # 512 * n_gpus effective bs
+    gradient_accumulation_steps=1, 
     num_train_epochs=5,
     per_device_train_batch_size=4,
     per_device_eval_batch_size=4,

@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH -J finetune_task_sequence_lm
-#SBATCH -o finetune_task_sequence_lm.out
-#SBATCH -e finetune_task_sequence_lm.err
+#SBATCH -J task_sequence_finetune_lm
+#SBATCH -o task_sequence_finetune_lm.out
+#SBATCH -e task_sequence_finetune_lm.err
 #SBATCH --mail-user=gtangg12@mit.edu
 #SBATCH --mail-type=NONE
-#SBATCH --gres=gpu:4
-#SBATCH --gpus-per-node=4
+#SBATCH --gres=gpu:1
+#SBATCH --gpus-per-node=1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem=128GB

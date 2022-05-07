@@ -10,6 +10,7 @@ def accuracy(outputs, labels):
         accuracy: scalar tensor of accuracy
     """
     _, preds = torch.max(outputs, dim=1)
+    print(labels, preds)
     return torch.mean((preds == labels).float())
 
 

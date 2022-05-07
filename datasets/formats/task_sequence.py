@@ -1,6 +1,7 @@
 from __future__ import annotations 
 from dataclasses import dataclass
 from typing import Type, List
+
 from PIL import Image
 
 
@@ -38,6 +39,6 @@ class TaskSequence:
     def __getitem__(self, idx) -> Type[TaskSequenceFrame]:
         return self.frames[idx]
     
-    def prefix_sequence(self, n: int) -> TaskSequence:
-        return TaskSequence(self.task, self.frames[:n])
+    def subsequence(self, start: int, end: int) -> TaskSequence:
+        return TaskSequence(self.task, self.frames[start : end])
 

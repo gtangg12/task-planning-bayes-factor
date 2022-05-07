@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 from babyai.common import *
+from babyai_task_sequence_dataset import TaskSequenceBatch
 
 
 class ResidualBLockFilm(nn.Module):
@@ -23,10 +24,10 @@ class ResidualBLockFilm(nn.Module):
 
 
 class FilmCNN(nn.Module):
-    def __init__(self, dim):
+    def __init__(self, num_channels, dim):
         super().__init__()
         self.cnn = nn.Sequential(
-            nn.Conv2d(19, 32, 3, padding=1),
+            nn.Conv2d(num_channels, 32, 3, padding=1),
             nn.ReLU(),
             nn.Conv2d(32, 64, 3, padding=1),
             nn.ReLU(),
@@ -46,22 +47,22 @@ class FilmCNN(nn.Module):
 
 
 class ClassifierFilmRNN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_channels, embedding_dim):
         super().__init__()
 
-        n_temporal = EMBEDDING_DIM
-        self.goal_encoder  = nn.LSTM(n_temporal, n_temporal, num_layers=1, batch_first=True)
-        self.actor_encoder = nn.LSTM(n_temporal, n_temporal, num_layers=1, batch_first=True)
+        hidden_dim = 128
+        self.task_encoder  = nn.LSTM(embedding_dim, hidden_dim, num_layers=1, batch_first=True)
+        self.actor_encoder = nn.LSTM(embedding_dim, hidden_dim, num_layers=1, batch_first=True)
 
-        n_kernels = 128
-        self.film_param = nn.ModuleList([nn.Linear(n_temporal, n_kernels),
-                                         nn.Linear(n_temporal, n_kernels)])
+        num_kernels = 128
+        self.film_param = nn.ModuleList([nn.Linear(hidden_dim, num_kernels),
+                                         nn.Linear(hidden_dim, num_kernels)])
 
-        self.cnn = FilmCNN(dim=n_kernels)
+        self.cnn = FilmCNN(num_channels, num_kernels)
 
         self.flatten = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(n_kernels * 7 * 7, 1024),
+            nn.Linear(num_kernels * 7 * 7, 1024),
             nn.ReLU(),
             nn.Dropout(0.35),
             nn.Linear(1024, 1024)
@@ -77,38 +78,42 @@ class ClassifierFilmRNN(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, goal, actor_info, images, goal_len, seq_len, label=None):
+    def forward(self, inputs: TaskSequenceBatch): 
+        #task, actor_info, images, task_len, seq_len
         #torch.Size([8, 32, 128]) torch.Size([8, 7, 128]) torch.Size([8, 7, 19, 7, 7]) torch.Size([8]) torch.Size([8])
-        #print(goal.shape, actor_info.shape, images.shape, goal_len.shape, seq_len.shape)
-        batch_size, padded_temporal_dim = images.shape[0], images.shape[1]
+        task_batch, images_batch, actions_batch = inputs['task'], inputs['images'], inputs['actions']
+        task_lens, sequence_lens = inputs['task_len'], inputs['sequence_len']
 
-        goal = self.forward_rnn(goal, goal_len, self.goal_encoder)
-        goal = torch.stack([goal[i, idx - 1, :] for i, idx in enumerate(goal_len)])
-        goal = goal.unsqueeze(1)
+        batch_size, padded_sequence_len = images_batch.shape[0], images_batch.shape[1]
 
-        actor_info = torch.cat((goal, actor_info), dim=1)
-        actor_info = self.forward_rnn(actor_info, seq_len + 1, self.actor_encoder)
-        actor_info = actor_info[:, 1:, :]
+        task_batch = self._forward_rnn(task_batch, task_lens, self.task_encoder) 
+        task_batch = torch.stack([task_batch[i, idx - 1, :] for i, idx in enumerate(task_lens)])
+        task_batch = task_batch.unsqueeze(1)
 
-        #print(padded_temporal_dim, actor_info.shape, images.shape)
+        #task: torch.Size([8, 1, 128])
+        combined_batch = torch.cat((task_batch, actions_batch), dim=1)
 
+        # actor_info: torch.Size([8, 8, 128])
+        combined_batch = self._forward_rnn(combined_batch, sequence_lens + 1, self.actor_encoder)
+        combined_batch = combined_batch[:, 1:, :]
+
+        # actor_info: torch.Size([8, 7, 128])
         joint_encodings = []
-        for i in range(padded_temporal_dim):
-            x = self.cnn(images[:, i, ...], self.film_param[0](actor_info[:, i, :]),
-                                            self.film_param[1](actor_info[:, i, :]))
+        for i in range(padded_sequence_len): # 7 
+            x = self.cnn(images_batch[:, i, ...], self.film_param[0](combined_batch[:, i, :]),
+                                                  self.film_param[1](combined_batch[:, i, :]))
             joint_encodings.append(self.flatten(x))
 
         joint_encodings = torch.stack(joint_encodings, dim=1)
-        lstm_output = self.forward_rnn(joint_encodings, seq_len, self.lstm)
+        lstm_output = self.forward_rnn(joint_encodings, sequence_lens, self.lstm)
         lstm_output_last = torch.stack([
-            lstm_output[i][seq_len[i] - 1] for i in range(batch_size)
+            lstm_output[i][sequence_lens[i] - 1] for i in range(batch_size)
         ])
 
         logits = self.classifier(lstm_output_last)
-
         return logits
 
-    def forward_rnn(self, input, seq_len, rnn):
+    def _forward_rnn(self, input, seq_len, rnn):
         input =  pack_padded_sequence(input,
                                       seq_len.cpu(),
                                       batch_first=True,
