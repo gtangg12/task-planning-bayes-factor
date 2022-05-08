@@ -8,7 +8,7 @@ import torch.nn.functional as F
 
 from babyai.common import *
 
-from datasets.data_collator import collate_list_of_dict
+from datasets.formats.task_sequence import TaskSequence
 from datasets.task_sequence_dataset import (
     TaskCompletitionDataset, 
     TaskSequenceDict
@@ -68,29 +68,28 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
 
     @classmethod
     def negative_sample(cls, encoded: TaskSequenceDict) -> TaskSequenceDict:
+        n_resampled = cls.NEGATIVE_SAMPLE_SUFFIX_LEN
         sequence_len = encoded['sequence_len'] 
-        suffix_begin = sequence_len - cls.NEGATIVE_SAMPLE_SUFFIX_LEN
+        suffix_begin = sequence_len - n_resampled
         resampled_encoded = copy.deepcopy(encoded)
-        resampled_actions = torch.randint(0, NUM_ACTIONS, (cls.NEGATIVE_SAMPLE_SUFFIX_LEN,))
+        resampled_actions = torch.randint(0, NUM_ACTIONS, (n_resampled,))
 
-        print(sequence_len)
-        print(suffix_begin)
-        print(resampled_actions)
-        exit()
-
-        # Guarantee at least one different action in new sequence
-        idx = random.randint(suffix_begin, sequence_len)
-        while resampled_actions[idx] == encoded['actions'][idx]:
+        # guarantee at least one different action in resampled actions
+        idx = random.randint(0, n_resampled - 1)
+        while resampled_encoded['actions'][suffix_begin + idx, resampled_actions[idx].item()] == 1:
             resampled_actions[idx] = random.randint(0, NUM_ACTIONS - 1)
 
-        # Replace suffix with corrupted actions
-        resampled_encoded['actions'][suffix_begin:] = resampled_actions
+        # one hot encode resampled actions
+        resampled_actions_encoded = F.one_hot(resampled_actions, num_classes=NUM_ACTIONS)
+        # set actions component of babyai action tensor to resampled actions
+        resampled_encoded['actions'][suffix_begin:, :NUM_ACTIONS] = resampled_actions_encoded
         return resampled_encoded
 
 
 if __name__ == '__main__':
     from babyai_task_sequence import load_sequences
     sequences = load_sequences('data/babyai/task_sequence_chunked/GoTo_000.pkl')
-    dataset = BabyaiSequenceDataset(sequences, negative_sample_rate=1)
+    dataset = BabyaiSequenceDataset(sequences)
 
     x = dataset[0]
+    print(x['actions'].shape)

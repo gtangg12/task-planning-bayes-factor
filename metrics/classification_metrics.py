@@ -19,8 +19,8 @@ def label_frequency(labels: torch.Tensor) -> torch.Tensor:
     Returns:
         (num_classes) tensor where index i is the frequency of label i
     """
-    return torch.bincount(labels)
-    return frequency
+    frequency = torch.bincount(labels)
+    return {i: f.item() for i, f in enumerate(frequency)}
 
 
 def label_frequency_norm(labels: torch.Tensor) -> torch.Tensor:
@@ -31,6 +31,7 @@ def label_frequency_norm(labels: torch.Tensor) -> torch.Tensor:
         (num_classes) tensor where index i is the normalized frequency of label i
     """
     frequency = label_frequency(labels)
-    return frequency / frequency.sum()
+    sum = sum(frequency.values())
+    return {i: f / sum for i, f in frequency.items()}
 
 

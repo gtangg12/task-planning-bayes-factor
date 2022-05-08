@@ -20,7 +20,8 @@ class TaskSequenceDict(TypedDict):
 
 class TaskSequenceDataset(Dataset):
     def __init__(self, sequences: List[TaskSequence]) -> None:
-        self.sequences = list(map(self.encode, sequences))
+        self.sequences = sequences
+        self.encoded = list(map(self.encode, sequences))
 
     def __len__(self) -> int:
         return len(self.sequences)
@@ -39,15 +40,15 @@ class TaskCompletitionDataset(TaskSequenceDataset):
         self.negative_sample_rate = negative_sample_rate  
 
     def __getitem__(self, idx: int) -> Dict:
-        sequence = self.sequences[idx]
-        sequence['label'] = True
+        encoded = self.encoded[idx]
+        encoded['label'] = True
         if random.random() < self.negative_sample_rate:
-            sequence = self.negative_sample(sequence)
-            sequence['label'] = False
-        return sequence
+            encoded = self.negative_sample(encoded)
+            encoded['label'] = False
+        return encoded
     
     @classmethod
-    def negative_sample(cls, sequence: TaskSequenceDict) -> TaskSequenceDict:
+    def negative_sample(cls, encoded: TaskSequenceDict) -> TaskSequenceDict:
        raise NotImplementedError
 
 
