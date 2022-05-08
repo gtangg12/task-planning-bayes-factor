@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 from torch.nn.utils.rnn import pad_sequence
 
 from datasets.formats.task_sequence import TaskSequence
-from datasets.data_collator import collate_list_of_dict
+from datasets.collate_utils import collate_list_of_dict
 
 
 class TaskSequenceDict(TypedDict):

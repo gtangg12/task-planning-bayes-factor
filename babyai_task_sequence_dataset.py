@@ -8,7 +8,6 @@ import torch.nn.functional as F
 
 from babyai.common import *
 
-from datasets.formats.task_sequence import TaskSequence
 from datasets.task_sequence_dataset import (
     TaskCompletitionDataset, 
     TaskSequenceDict
