@@ -27,9 +27,7 @@ parser.add_argument(
     '--num_data', type=int, default=None, help='Defaults to all data used.')
 args = parser.parse_args()
 
-print(args)
 
-exit()
 ''' Metrics '''
 classification_accuracy = load_metric('classification', 'accuracy')
 label_frequency = load_metric('classification', 'label_frequency')
@@ -45,13 +43,10 @@ def compute_metrics(outputs):
     }
 
 
-''' Tokenizer and Model '''
+''' Tokenizer '''
 tokenizer = AutoTokenizer.from_pretrained('gpt2', use_fast=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenize_fn = lambda text: tokenizer(text, padding='max_length', truncation=True)
-
-model = AutoModelForSequenceClassification.from_pretrained('gpt2', num_labels=len(ACTIONS))
-model.config.pad_token_id = tokenizer.pad_token_id
 
 
 ''' Loading Data '''
@@ -67,11 +62,17 @@ texts, labels, tasknames = list(zip(*inputs))
 # numerically encode actions
 labels = list(map(lambda action: ACTIONS_TO_INDEX[action], labels))
 
+
 ''' Datasets '''
 text_sequence_dataset = TextSequenceClassificationDataset(texts, labels, tokenize_fn)
 num_train, num_eval = compute_train_eval_split(len(text_sequence_dataset))
 train_dataset, eval_dataset = \
     torch.utils.data.random_split(text_sequence_dataset , [num_train, num_eval])
+
+
+''' Model '''
+model = AutoModelForSequenceClassification.from_pretrained('gpt2', num_labels=len(ACTIONS))
+model.config.pad_token_id = tokenizer.pad_token_id
 
 
 ''' Training '''

@@ -28,6 +28,5 @@ for n in NUM_DATA:
     experiment_params = make_args(experiment_params)
     cmd = f'{sbatch_cmd} {experiment_params}'
     os.system(cmd)
-    exit()
 
 

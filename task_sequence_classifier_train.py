@@ -16,7 +16,12 @@ from babyai_task_sequence_dataset import BabyaiSequenceDataset
 from task_sequence_classifier import ClassifierFilmRNN
 
 
-# load data
+''' Metrics '''
+classification_accuracy = load_metric('classification', 'accuracy')
+label_frequency = load_metric('classification', 'label_frequency')
+
+
+''' Loading Data '''
 FULLPATH = '/nobackup/users/gtangg12/task_planning_bayes_factor'
 NUM_CHUNKS = 1
 
@@ -29,21 +34,17 @@ sequences = load_from_dir(
 )
 
 
-# Datasets
+''' Datasets '''
 babyai_sequence_dataset = BabyaiSequenceDataset(sequences)
 num_train, num_eval = compute_train_eval_split(len(babyai_sequence_dataset))
 train_dataset, eval_dataset = \
     torch.utils.data.random_split(babyai_sequence_dataset , [num_train, num_eval])
 
 
-# Model
+''' Model '''
 model = ClassifierFilmRNN(
     num_channels=19, 
     vocab_size=VOCAB_SIZE, 
     action_embedding_dim=babyai_sequence_dataset.EMBEDDING_DIM
 )
 
-
-# Metrics
-classification_accuracy = load_metric('classification', 'accuracy')
-label_frequency = load_metric('classification', 'label_frequency')
