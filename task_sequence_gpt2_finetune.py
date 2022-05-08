@@ -1,3 +1,5 @@
+import argparse
+
 import torch
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
@@ -14,31 +16,21 @@ from datasets.load_data_utils import (
 from datasets.text_classification_dataset import TextSequenceClassificationDataset
 
 
-# load data
-FULLPATH = '/nobackup/users/gtangg12/task_planning_bayes_factor'
-NUM_CHUNKS = 1
-    
-def filter_fn(filename):
-   return chunknum_from_path(filename) < NUM_CHUNKS
+''' Experiment params '''
+parser = argparse.ArgumentParser(
+    description='Finetune GPT2 for text sequence classification.')
+parser.add_argument(
+    '--data_dir', type=str, help='Text classification dataset directory')
+parser.add_argument(
+    '--output_dir', type=str, help='Output directory for saving checkpoints')
+parser.add_argument(
+    '--num_data', type=int, default=None, help='Defaults to all data used.')
+args = parser.parse_args()
 
-dataset_path = f'{FULLPATH}/data/babyai/env_description_chunked'
-inputs = load_from_dir(dataset_path, filter_fn)
-texts, labels, tasknames = list(zip(*inputs))
+print(args)
 
-# numerically encode actions
-labels = list(map(lambda action: ACTIONS_TO_INDEX[action], labels))
-
-
-# Tokenizer and Model
-tokenizer = AutoTokenizer.from_pretrained('gpt2', use_fast=True)
-tokenizer.pad_token = tokenizer.eos_token
-tokenize_fn = lambda text: tokenizer(text, padding='max_length', truncation=True)
-
-model = AutoModelForSequenceClassification.from_pretrained('gpt2', num_labels=len(ACTIONS))
-model.config.pad_token_id = tokenizer.pad_token_id
-
-
-# Metrics
+exit()
+''' Metrics '''
 classification_accuracy = load_metric('classification', 'accuracy')
 label_frequency = load_metric('classification', 'label_frequency')
 
@@ -53,21 +45,43 @@ def compute_metrics(outputs):
     }
 
 
-# Datasets
+''' Tokenizer and Model '''
+tokenizer = AutoTokenizer.from_pretrained('gpt2', use_fast=True)
+tokenizer.pad_token = tokenizer.eos_token
+tokenize_fn = lambda text: tokenizer(text, padding='max_length', truncation=True)
+
+model = AutoModelForSequenceClassification.from_pretrained('gpt2', num_labels=len(ACTIONS))
+model.config.pad_token_id = tokenizer.pad_token_id
+
+
+''' Loading Data '''
+NUM_CHUNKS_USED = 1
+
+inputs = load_from_dir(
+    args.data_dir, 
+    num_data=args.num_data,
+    filename_filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS_USED
+)
+texts, labels, tasknames = list(zip(*inputs))
+
+# numerically encode actions
+labels = list(map(lambda action: ACTIONS_TO_INDEX[action], labels))
+
+''' Datasets '''
 text_sequence_dataset = TextSequenceClassificationDataset(texts, labels, tokenize_fn)
 num_train, num_eval = compute_train_eval_split(len(text_sequence_dataset))
 train_dataset, eval_dataset = \
     torch.utils.data.random_split(text_sequence_dataset , [num_train, num_eval])
 
-# Training 
-# WARNING: huggingface trainer will use all gpus on device
+
+''' Training '''
 training_args = TrainingArguments(
-    output_dir=f'{FULLPATH}/checkpoints/babyai_lm', 
-    evaluation_strategy='steps', 
-    eval_steps=128,
+    output_dir=f'{args.output_dir}', 
+    evaluation_strategy='epoch', 
     save_strategy='epoch',
-    gradient_accumulation_steps=64, 
-    num_train_epochs=10,
+    logging_strategy='epoch',
+    gradient_accumulation_steps=4, 
+    num_train_epochs=5,
     per_device_train_batch_size=4,
     per_device_eval_batch_size=4,
 )

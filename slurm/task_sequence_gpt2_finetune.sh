@@ -1,10 +1,7 @@
 #!/bin/bash
-#SBATCH -J task_sequence_lm_finetune
-#SBATCH -o task_sequence_lm_finetune.out
-#SBATCH -e task_sequence_lm_finetune.err
 #SBATCH --mail-user=gtangg12@mit.edu
 #SBATCH --mail-type=NONE
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:2
 #SBATCH --gpus-per-node=1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
@@ -32,7 +29,6 @@ echo " Number of nodes:= " $SLURM_JOB_NUM_NODES
 echo " GPUs per node:= " $SLURM_JOB_GPUS
 echo " Ntasks per node:= "  $SLURM_NTASKS_PER_NODE
 
-
 ####    Use MPI for communication with Horovod - this can be hard-coded during installation as well.
 export HOROVOD_GPU_ALLREDUCE=MPI
 export HOROVOD_GPU_ALLGATHER=MPI
@@ -45,7 +41,7 @@ echo " Run started at:- "
 date
 
 ## Horovod execution
-horovodrun -np $SLURM_NTASKS -H `cat $NODELIST` python /nobackup/users/gtangg12/task_planning_bayes_factor/task_sequence_lm_finetune.py
+horovodrun -np $SLURM_NTASKS -H `cat $NODELIST` python /nobackup/users/gtangg12/task_planning_bayes_factor/task_sequence_gpt2_finetune.py $1
 
 echo "Run completed at:- "
 date
