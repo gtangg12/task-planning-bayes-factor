@@ -99,6 +99,9 @@ class Trainer:
             raise ValueError("Trainer: training requires a train_dataset.")
         if not self.optimizer:
             raise ValueError("Trainer: training requires an optimizer.")
+
+        print(len(self.train_dataloader), len(self.eval_dataloader))
+        exit()
             
         for epoch in range(self.args.num_train_epochs):
             print(f'Epoch-{epoch}')

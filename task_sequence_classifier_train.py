@@ -2,6 +2,7 @@ import os
 import argparse
 
 import torch
+import torch.nn as nn
 
 from babyai.common import *
 
@@ -10,6 +11,7 @@ from datasets.load_data_utils import (
     load_from_dir,
     compute_train_eval_split
 )
+from datasets.task_sequence_dataset import collate_fn
 from babyai_task_sequence import (
     load_sequences,
     chunknum_from_path,
@@ -57,11 +59,11 @@ NUM_CHUNKS = 1
 
 sequences = load_from_dir(
     args.data_dir, 
-    load_fn=load_sequences,
-    filename_filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS 
+    num_data=args.num_data,
+    filename_load_fn=load_sequences,
+    filename_filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS and taskname_from_path(filename) == 'GoToLocal' 
 )
-print(len(sequences))
-exit()
+
 
 ''' Datasets '''
 babyai_sequence_dataset = BabyaiSequenceDataset(sequences)
@@ -72,11 +74,10 @@ train_dataset, eval_dataset = \
 
 ''' Model '''
 model = ClassifierFilmRNN(
-    num_channels=19, 
+    num_channels=NUM_VIEW_FEATURES, 
     vocab_size=VOCAB_SIZE, 
     action_embedding_dim=babyai_sequence_dataset.EMBEDDING_DIM
 )
-
 
 ''' Training '''
 training_args = TrainingArguments(
@@ -88,12 +89,19 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=32,
 )
 
+optimizer=torch.optim.Adam(model.parameters(), lr=0.001)
+scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
+
 trainer = Trainer(
     model=model,
     args=training_args,
+    data_collator=collate_fn,
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     compute_metrics=compute_metrics,
+    criterion=nn.BCELoss(),
+    optimizer=torch.optim.Adam(model.parameters(), lr=5e-5),
+    scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min'),
 )
 
 trainer.train()

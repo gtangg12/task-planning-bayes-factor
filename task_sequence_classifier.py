@@ -149,10 +149,10 @@ if __name__ == '__main__':
     inputs = {
         'taskname': 'NAME',
         'task': torch.rand(8, 5, 32),
-        'images': torch.rand(8, 7, 19, 7, 7),
+        'images': torch.rand(8, 7, 20, 7, 7),
         'actions': torch.rand(8, 7, 11),
         'task_len': torch.tensor([5, 5, 5, 5, 5, 5, 5, 5]),
         'sequence_len': torch.tensor([7, 4, 5, 3, 2, 1, 6, 5]),
     }
-    model = ClassifierFilmRNN(num_channels=19, vocab_size=32, action_embedding_dim=11)
+    model = ClassifierFilmRNN(num_channels=20, vocab_size=32, action_embedding_dim=11)
     print(model(inputs).shape)
