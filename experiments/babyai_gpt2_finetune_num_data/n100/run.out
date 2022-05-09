@@ -1,0 +1,22 @@
+ 
+ Nodelist:=  node0011
+ Number of nodes:=  1
+ GPUs per node:=  1,2
+ Ntasks per node:=  1
+ Running on multiple nodes/GPU devices
+
+ Run started at:- 
+Sun May  8 23:13:54 EDT 2022
+[1,0]<stdout>:{'loss': 10.5933, 'learning_rate': 4e-05, 'epoch': 0.73}
+[1,0]<stdout>:{'eval_loss': 6.225349426269531, 'eval_accuracy': 0.2666666805744171, 'eval_preds_freq': {0: 0, 1: 15}, 'eval_labels_freq': {0: 1, 1: 4, 2: 9, 3: 0, 4: 0, 5: 1}, 'eval_runtime': 0.3016, 'eval_samples_per_second': 49.727, 'eval_steps_per_second': 6.63, 'epoch': 0.73}
+[1,0]<stdout>:{'loss': 6.7747, 'learning_rate': 3e-05, 'epoch': 1.73}
+[1,0]<stdout>:{'eval_loss': 4.464127540588379, 'eval_accuracy': 0.2666666805744171, 'eval_preds_freq': {0: 0, 1: 15}, 'eval_labels_freq': {0: 1, 1: 4, 2: 9, 3: 0, 4: 0, 5: 1}, 'eval_runtime': 0.3017, 'eval_samples_per_second': 49.726, 'eval_steps_per_second': 6.63, 'epoch': 1.73}
+[1,0]<stdout>:{'loss': 4.6574, 'learning_rate': 2e-05, 'epoch': 2.73}
+[1,0]<stdout>:{'eval_loss': 2.893725872039795, 'eval_accuracy': 0.2666666805744171, 'eval_preds_freq': {0: 0, 1: 15}, 'eval_labels_freq': {0: 1, 1: 4, 2: 9, 3: 0, 4: 0, 5: 1}, 'eval_runtime': 0.3022, 'eval_samples_per_second': 49.643, 'eval_steps_per_second': 6.619, 'epoch': 2.73}
+[1,0]<stdout>:{'loss': 2.6819, 'learning_rate': 1e-05, 'epoch': 3.73}
+[1,0]<stdout>:{'eval_loss': 1.8155276775360107, 'eval_accuracy': 0.2666666805744171, 'eval_preds_freq': {0: 0, 1: 15}, 'eval_labels_freq': {0: 1, 1: 4, 2: 9, 3: 0, 4: 0, 5: 1}, 'eval_runtime': 0.3034, 'eval_samples_per_second': 49.445, 'eval_steps_per_second': 6.593, 'epoch': 3.73}
+[1,0]<stdout>:{'loss': 1.8027, 'learning_rate': 0.0, 'epoch': 4.73}
+[1,0]<stdout>:{'eval_loss': 1.6281511783599854, 'eval_accuracy': 0.2666666805744171, 'eval_preds_freq': {0: 0, 1: 15}, 'eval_labels_freq': {0: 1, 1: 4, 2: 9, 3: 0, 4: 0, 5: 1}, 'eval_runtime': 0.3017, 'eval_samples_per_second': 49.715, 'eval_steps_per_second': 6.629, 'epoch': 4.73}
+[1,0]<stdout>:{'train_runtime': 34.0998, 'train_samples_per_second': 12.463, 'train_steps_per_second': 0.293, 'train_loss': 5.302005505561828, 'epoch': 4.73}
+Run completed at:- 
+Sun May  8 23:14:41 EDT 2022

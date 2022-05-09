@@ -1,6 +1,7 @@
 from __future__ import annotations 
 from dataclasses import dataclass
-from typing import Type
+from typing import List
+
 from PIL import Image
 
 
@@ -18,7 +19,7 @@ class Task:
 @dataclass
 class TaskSequenceFrame:
     image: Image
-    action: Type[Action]
+    action: Action
     
     def __repr__(self) -> str:
         return f"""TaskSequenceFrame(img: {self.image}, action: {self.action.name})"""
@@ -26,8 +27,8 @@ class TaskSequenceFrame:
 
 @dataclass
 class TaskSequence:
-    task: Type[Task]
-    frames: list[Type[TaskSequenceFrame]]
+    task: Task
+    frames: List[TaskSequenceFrame]
     
     def __len__(self) -> int:
         return len(self.frames)
@@ -35,6 +36,9 @@ class TaskSequence:
     def __repr__(self) -> str:
         return f'TaskSequence(task: {self.task.name}, len: {len(self)})'
 
-    def __getitem__(self, idx) -> Type[TaskSequenceFrame]:
+    def __getitem__(self, idx) -> TaskSequenceFrame:
         return self.frames[idx]
+    
+    def subsequence(self, start: int, end: int) -> TaskSequence:
+        return TaskSequence(self.task, self.frames[start : end])
 

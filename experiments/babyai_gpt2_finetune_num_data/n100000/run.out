@@ -1,0 +1,11 @@
+ 
+ Nodelist:=  node0014
+ Number of nodes:=  1
+ GPUs per node:=  0,3
+ Ntasks per node:=  1
+ Running on multiple nodes/GPU devices
+
+ Run started at:- 
+Sun May  8 23:24:07 EDT 2022
+[1,0]<stdout>:{'loss': 0.6422, 'learning_rate': 4e-05, 'epoch': 1.0}
+[1,0]<stdout>:{'eval_loss': 0.5548608303070068, 'eval_accuracy': 0.7811999917030334, 'eval_preds_freq': {0: 936, 1: 1073, 2: 11808, 3: 582, 4: 0, 5: 601}, 'eval_labels_freq': {0: 2006, 1: 2572, 2: 9291, 3: 450, 4: 104, 5: 577}, 'eval_runtime': 289.9621, 'eval_samples_per_second': 51.731, 'eval_steps_per_second': 6.466, 'epoch': 1.0}
