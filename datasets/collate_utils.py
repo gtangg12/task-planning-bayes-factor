@@ -1,7 +1,10 @@
 import json
-from typing import List, Dict, Iterable
+from typing import List, Dict, Iterable, Callable, Any
 
 import torch
+
+
+DataCollatorFunc = Callable[[List[Any]], Dict]
 
 TORCH_PRIMATIVES = (bool, int, float)
 

@@ -1,10 +1,15 @@
 from typing import Callable
 
+import torch
+
 from metrics.classification_metrics import (
     accuracy,
     label_frequency,
     label_frequency_norm,
 )
+
+
+Logits, Labels = torch.Tensor, torch.Tensor
 
 
 CLASSIFICATION_METRICS = {

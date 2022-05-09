@@ -1,23 +1,17 @@
-import os
 import json
-from typing import Any, List, Dict, Callable, NewType, Optional
+from typing import Any, List, Dict, Callable, Optional, NewType
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 
-from training_args import TrainingArguments
+from metrics import Logits, Labels
+from datasets.collate_utils import DataCollatorFunc
+from workflows.training_args import TrainingArguments
 
-
-# TODO figure out how to make inputdata consistent
-InputData = NewType('InputDataClass', Any)
-
-DataCollator = Callable[[List[InputData]], Dict[str, Any]]
 
 Loss = float
-OutputDataList, LabelDataList = List[InputData], List[Any]
-Prediction = [Loss, OutputDataList, LabelDataList, Dataset]
 
 
 #TODO support start from epoch
@@ -28,11 +22,11 @@ class Trainer:
         self,
         model: nn.Module,
         args: TrainingArguments,
-        data_collator: Optional[DataCollator] = None,
+        data_collator: Optional[DataCollatorFunc] = None,
         train_dataset: Optional[Dataset] = None,
         eval_dataset: Optional[Dataset] = None,
-        compute_metrics: Optional[Callable[[Prediction], Dict]] = None,
-        criterion: Optional[Callable[[InputData, InputData], Loss]] = None,
+        compute_metrics: Optional[Callable[[Logits, Labels], Dict]] = None,
+        criterion: Optional[Callable[[Logits, Labels], Loss]] = None,
         optimizer: Optional[torch.optim.Optimizer] = None,
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None
     ):
@@ -52,7 +46,7 @@ class Trainer:
         self.optimizer.zero_grad()
         self.scheduler = scheduler
 
-    def get_train_dataloader(self, dataset) -> DataLoader:
+    def get_train_dataloader(self, dataset):
         ''' Returns a new instance of DataLoader constructed from the training dataset.'''
         if self.train_dataset is None:
             raise ValueError("Trainer: training requires a train_dataset.")
@@ -65,7 +59,7 @@ class Trainer:
             num_workers=self.args.dataloader_num_workers,
         )
 
-    def get_eval_dataloader(self, dataset) -> DataLoader:
+    def get_eval_dataloader(self, dataset):
         ''' Returns a new instance of DataLoader constructed from the evaluation dataset.'''
         if self.eval_dataset is None:
             raise ValueError("Trainer: evaluation requires a train_dataset.")

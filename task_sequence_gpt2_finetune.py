@@ -1,10 +1,10 @@
-import argparse
 import os
+import argparse
 
 import torch
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
-from transformers import TrainingArguments, Trainer
+
 
 from babyai.common import *
 from babyai_task_sequence import chunknum_from_path
@@ -15,7 +15,7 @@ from datasets.load_data_utils import (
     compute_train_eval_split
 )
 from datasets.text_classification_dataset import TextSequenceClassificationDataset
-
+from workflows import TransformersTrainer, TransformersTrainingArguments
 
 ''' Experiment params '''
 parser = argparse.ArgumentParser(
@@ -81,7 +81,7 @@ model.config.pad_token_id = tokenizer.pad_token_id
 
 
 ''' Training '''
-training_args = TrainingArguments(
+training_args = TransformersTrainingArguments(
     output_dir=args.checkpoints_dir, 
     logging_dir=args.logging_dir,
     logging_strategy='epoch',
@@ -93,7 +93,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=4,
 )
 
-trainer = Trainer(
+trainer = TransformersTrainer(
     model=model,
     args=training_args,
     train_dataset=train_dataset,
