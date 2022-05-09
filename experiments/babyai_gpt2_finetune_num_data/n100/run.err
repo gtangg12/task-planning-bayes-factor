@@ -1,95 +1,0 @@
-[1,0]<stderr>:  0%|          | 0/100 [00:00<?, ?it/s][1,0]<stderr>:100%|██████████| 100/100 [00:00<00:00, 1808.10it/s][1,0]<stderr>:
-[1,0]<stderr>:Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at gpt2 and are newly initialized: ['score.weight']
-[1,0]<stderr>:You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
-[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/utils/tensorboard/__init__.py:6: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
-[1,0]<stderr>:  if not hasattr(tensorboard, '__version__') or LooseVersion(tensorboard.__version__) < LooseVersion('1.15'):
-[1,0]<stderr>:***** Running training *****
-[1,0]<stderr>:  Num examples = 85
-[1,0]<stderr>:  Num Epochs = 5
-[1,0]<stderr>:  Instantaneous batch size per device = 4
-[1,0]<stderr>:  Total train batch size (w. parallel, distributed & accumulation) = 32
-[1,0]<stderr>:  Gradient Accumulation steps = 4
-[1,0]<stderr>:  Total optimization steps = 10
-[1,0]<stderr>:  0%|          | 0/10 [00:00<?, ?it/s][1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
-[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
-[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/cuda/nccl.py:47: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
-[1,0]<stderr>:  if not isinstance(inputs, collections.Container) or isinstance(inputs, torch.Tensor):
-[1,0]<stderr>: 10%|█         | 1/10 [00:05<00:47,  5.27s/it][1,0]<stderr>: 20%|██        | 2/10 [00:06<00:25,  3.13s/it][1,0]<stderr>:                                              [1,0]<stderr>: 20%|██        | 2/10 [00:07<00:25,  3.13s/it][1,0]<stderr>:***** Running Evaluation *****
-[1,0]<stderr>:  Num examples = 15
-[1,0]<stderr>:  Batch size = 8
-[1,0]<stderr>:
-[1,0]<stderr>:  0%|          | 0/2 [00:00<?, ?it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.02it/s][1,0]<stderr>:[A[1,0]<stderr>:Trainer is attempting to log a value of "{0: 0, 1: 15}" of type <class 'dict'> for key "eval/preds_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:Trainer is attempting to log a value of "{0: 2, 1: 2, 2: 10, 3: 1}" of type <class 'dict'> for key "eval/labels_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:                                              [1,0]<stderr>:[1,0]<stderr>:
-[1,0]<stderr>:                                             [1,0]<stderr>:[A[1,0]<stderr>: 20%|██        | 2/10 [00:08<00:25,  3.13s/it][1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.02it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:                                             [A[1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-2
-[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-2/config.json
-[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-2/pytorch_model.bin
-[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
-[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
-[1,0]<stderr>: 30%|███       | 3/10 [00:11<00:27,  3.99s/it][1,0]<stderr>: 40%|████      | 4/10 [00:13<00:18,  3.05s/it][1,0]<stderr>:                                              [1,0]<stderr>: 40%|████      | 4/10 [00:14<00:18,  3.05s/it][1,0]<stderr>:***** Running Evaluation *****
-[1,0]<stderr>:  Num examples = 15
-[1,0]<stderr>:  Batch size = 8
-[1,0]<stderr>:
-[1,0]<stderr>:  0%|          | 0/2 [00:00<?, ?it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.45it/s][1,0]<stderr>:[A[1,0]<stderr>:Trainer is attempting to log a value of "{0: 0, 1: 0, 2: 0, 3: 0, 4: 15}" of type <class 'dict'> for key "eval/preds_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:Trainer is attempting to log a value of "{0: 2, 1: 2, 2: 10, 3: 1}" of type <class 'dict'> for key "eval/labels_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:                                              [1,0]<stderr>:[1,0]<stderr>:
-[1,0]<stderr>:                                             [1,0]<stderr>:[A[1,0]<stderr>: 40%|████      | 4/10 [00:14<00:18,  3.05s/it][1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.45it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:                                             [A[1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-4
-[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-4/config.json
-[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-4/pytorch_model.bin
-[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
-[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
-[1,0]<stderr>: 50%|█████     | 5/10 [00:18<00:18,  3.73s/it][1,0]<stderr>: 60%|██████    | 6/10 [00:20<00:12,  3.01s/it][1,0]<stderr>:                                              [1,0]<stderr>: 60%|██████    | 6/10 [00:21<00:12,  3.01s/it][1,0]<stderr>:***** Running Evaluation *****
-[1,0]<stderr>:  Num examples = 15
-[1,0]<stderr>:  Batch size = 8
-[1,0]<stderr>:
-[1,0]<stderr>:  0%|          | 0/2 [00:00<?, ?it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.49it/s][1,0]<stderr>:[A[1,0]<stderr>:Trainer is attempting to log a value of "{0: 5, 1: 2, 2: 8}" of type <class 'dict'> for key "eval/preds_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:Trainer is attempting to log a value of "{0: 2, 1: 2, 2: 10, 3: 1}" of type <class 'dict'> for key "eval/labels_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:                                              [1,0]<stderr>:[1,0]<stderr>:
-[1,0]<stderr>:                                             [1,0]<stderr>:[A[1,0]<stderr>: 60%|██████    | 6/10 [00:21<00:12,  3.01s/it][1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.49it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:                                             [A[1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-6
-[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-6/config.json
-[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-6/pytorch_model.bin
-[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
-[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
-[1,0]<stderr>: 70%|███████   | 7/10 [00:24<00:10,  3.62s/it][1,0]<stderr>: 80%|████████  | 8/10 [00:26<00:05,  2.98s/it][1,0]<stderr>:                                              [1,0]<stderr>: 80%|████████  | 8/10 [00:27<00:05,  2.98s/it][1,0]<stderr>:***** Running Evaluation *****
-[1,0]<stderr>:  Num examples = 15
-[1,0]<stderr>:  Batch size = 8
-[1,0]<stderr>:
-[1,0]<stderr>:  0%|          | 0/2 [00:00<?, ?it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.50it/s][1,0]<stderr>:[A[1,0]<stderr>:Trainer is attempting to log a value of "{0: 0, 1: 13, 2: 2}" of type <class 'dict'> for key "eval/preds_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:Trainer is attempting to log a value of "{0: 2, 1: 2, 2: 10, 3: 1}" of type <class 'dict'> for key "eval/labels_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:                                              [1,0]<stderr>:[1,0]<stderr>:
-[1,0]<stderr>:                                             [1,0]<stderr>:[A[1,0]<stderr>: 80%|████████  | 8/10 [00:27<00:05,  2.98s/it][1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.50it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:                                             [A[1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-8
-[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-8/config.json
-[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-8/pytorch_model.bin
-[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
-[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
-[1,0]<stderr>: 90%|█████████ | 9/10 [00:31<00:03,  3.60s/it][1,0]<stderr>:100%|██████████| 10/10 [00:33<00:00,  2.99s/it][1,0]<stderr>:                                               [1,0]<stderr>:[1,0]<stderr>:100%|██████████| 10/10 [00:33<00:00,  2.99s/it][1,0]<stderr>:***** Running Evaluation *****
-[1,0]<stderr>:  Num examples = 15
-[1,0]<stderr>:  Batch size = 8
-[1,0]<stderr>:
-[1,0]<stderr>:  0%|          | 0/2 [00:00<?, ?it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.46it/s][1,0]<stderr>:[A[1,0]<stderr>:Trainer is attempting to log a value of "{0: 0, 1: 13, 2: 2}" of type <class 'dict'> for key "eval/preds_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:Trainer is attempting to log a value of "{0: 2, 1: 2, 2: 10, 3: 1}" of type <class 'dict'> for key "eval/labels_freq" as a scalar. This invocation of Tensorboard's writer.add_scalar() is incorrect so we dropped this attribute.
-[1,0]<stderr>:                                               [1,0]<stderr>:[1,0]<stderr>:
-[1,0]<stderr>:                                             [1,0]<stderr>:[A[1,0]<stderr>:100%|██████████| 10/10 [00:33<00:00,  2.99s/it][1,0]<stderr>:
-[1,0]<stderr>:100%|██████████| 2/2 [00:00<00:00, 13.46it/s][1,0]<stderr>:[A[1,0]<stderr>:
-[1,0]<stderr>:                                             [A[1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-10
-[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-10/config.json
-[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_gpt2_finetune_num_data/n100/checkpoint-10/pytorch_model.bin
-[1,0]<stderr>:
-[1,0]<stderr>:
-[1,0]<stderr>:Training completed. Do not forget to share your model on huggingface.co/models =)
-[1,0]<stderr>:
-[1,0]<stderr>:
-[1,0]<stderr>:                                               [1,0]<stderr>:[1,0]<stderr>:100%|██████████| 10/10 [00:35<00:00,  2.99s/it][1,0]<stderr>:100%|██████████| 10/10 [00:35<00:00,  3.52s/it][1,0]<stderr>:
