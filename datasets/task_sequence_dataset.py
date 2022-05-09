@@ -53,13 +53,9 @@ class TaskCompletitionDataset(TaskSequenceDataset):
 
 
 def collate_fn(batch: List[TaskSequenceDict]) -> Dict:
-    batched = { 
-        'task_len': [], 'sequence_len': [] 
-    }
+    batched = {}
     for name in TaskSequenceDict.__annotations__.keys():
-        batched[name] = collate_list_of_dict(batch, {name})
-        if name != 'taskname': 
+        batched.update(collate_list_of_dict(batch, {name}))
+        if name not in ['taskname', 'task_len', 'sequence_len']:
             batched[name] = pad_sequence(batched[name], batch_first=True)
-        batched['task_len'].append(batch['task'].shape[0])
-        batched['sequence_len'].append(batch['images'].shape[0])
     return batched

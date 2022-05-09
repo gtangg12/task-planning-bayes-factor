@@ -99,9 +99,6 @@ class Trainer:
             raise ValueError("Trainer: training requires a train_dataset.")
         if not self.optimizer:
             raise ValueError("Trainer: training requires an optimizer.")
-
-        print(len(self.train_dataloader), len(self.eval_dataloader))
-        exit()
             
         for epoch in range(self.args.num_train_epochs):
             print(f'Epoch-{epoch}')
@@ -110,7 +107,9 @@ class Trainer:
             logits, labels = [], []
             self.model.train()
             for step, inputs in enumerate(tqdm(self.train_dataloader)):
+                print(inputs)
                 loss, _logits = self.training_step(inputs, epoch)
+                exit()
                 train_loss += loss.item()
                 logits.append(_logits)
                 labels.append(inputs['labels'])
