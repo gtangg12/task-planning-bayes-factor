@@ -1,0 +1,24 @@
+ 
+ Nodelist:=  node0007
+ Number of nodes:=  1
+ GPUs per node:=  1,2
+ Ntasks per node:=  1
+ Running on multiple nodes/GPU devices
+
+ Run started at:- 
+Sun May  8 04:29:17 EDT 2022
+[1,0]<stdout>:{'eval_loss': 1.1624618768692017, 'eval_accuracy': 0.6346666812896729, 'eval_preds_freq': {0: 141, 1: 0, 2: 1359}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.8196, 'eval_samples_per_second': 52.048, 'eval_steps_per_second': 6.523, 'epoch': 0.48}
+[1,0]<stdout>:{'eval_loss': 0.8071808815002441, 'eval_accuracy': 0.6940000057220459, 'eval_preds_freq': {0: 201, 1: 0, 2: 1219, 3: 18, 4: 0, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.5354, 'eval_samples_per_second': 52.566, 'eval_steps_per_second': 6.588, 'epoch': 0.96}
+[1,0]<stdout>:{'eval_loss': 0.7596607208251953, 'eval_accuracy': 0.7113333344459534, 'eval_preds_freq': {0: 24, 1: 98, 2: 1225, 3: 91, 4: 0, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.8001, 'eval_samples_per_second': 52.083, 'eval_steps_per_second': 6.528, 'epoch': 1.45}
+[1,0]<stdout>:{'loss': 0.9829, 'learning_rate': 3.113207547169811e-05, 'epoch': 1.88}
+[1,0]<stdout>:{'eval_loss': 0.6767176985740662, 'eval_accuracy': 0.7326666712760925, 'eval_preds_freq': {0: 156, 1: 41, 2: 1180, 3: 61, 4: 0, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.3437, 'eval_samples_per_second': 52.922, 'eval_steps_per_second': 6.633, 'epoch': 1.93}
+[1,0]<stdout>:{'eval_loss': 0.6546904444694519, 'eval_accuracy': 0.7413333058357239, 'eval_preds_freq': {0: 80, 1: 74, 2: 1171, 3: 91, 4: 22, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.7831, 'eval_samples_per_second': 52.114, 'eval_steps_per_second': 6.532, 'epoch': 2.41}
+[1,0]<stdout>:{'eval_loss': 0.6008723974227905, 'eval_accuracy': 0.746666669845581, 'eval_preds_freq': {0: 92, 1: 90, 2: 1159, 3: 87, 4: 10, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.589, 'eval_samples_per_second': 52.468, 'eval_steps_per_second': 6.576, 'epoch': 2.9}
+[1,0]<stdout>:{'eval_loss': 0.598515510559082, 'eval_accuracy': 0.7506666779518127, 'eval_preds_freq': {0: 110, 1: 69, 2: 1167, 3: 81, 4: 11, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.5648, 'eval_samples_per_second': 52.512, 'eval_steps_per_second': 6.582, 'epoch': 3.38}
+[1,0]<stdout>:{'loss': 0.6355, 'learning_rate': 1.2264150943396227e-05, 'epoch': 3.77}
+[1,0]<stdout>:{'eval_loss': 0.5736757516860962, 'eval_accuracy': 0.7693333625793457, 'eval_preds_freq': {0: 161, 1: 126, 2: 1045, 3: 72, 4: 34, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.6098, 'eval_samples_per_second': 52.43, 'eval_steps_per_second': 6.571, 'epoch': 3.86}
+[1,0]<stdout>:{'eval_loss': 0.5762015581130981, 'eval_accuracy': 0.7573333382606506, 'eval_preds_freq': {0: 175, 1: 136, 2: 1040, 3: 76, 4: 11, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.3378, 'eval_samples_per_second': 52.933, 'eval_steps_per_second': 6.634, 'epoch': 4.35}
+[1,0]<stdout>:{'eval_loss': 0.5660748481750488, 'eval_accuracy': 0.765999972820282, 'eval_preds_freq': {0: 130, 1: 121, 2: 1104, 3: 69, 4: 14, 5: 62}, 'eval_labels_freq': {0: 217, 1: 264, 2: 896, 3: 46, 4: 20, 5: 57}, 'eval_runtime': 28.7953, 'eval_samples_per_second': 52.092, 'eval_steps_per_second': 6.529, 'epoch': 4.83}
+[1,0]<stdout>:{'train_runtime': 2433.7377, 'train_samples_per_second': 17.463, 'train_steps_per_second': 0.544, 'train_loss': 0.7540324891288326, 'epoch': 5.0}
+Run completed at:- 
+Sun May  8 05:10:19 EDT 2022

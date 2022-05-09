@@ -1,0 +1,43 @@
+[1,0]<stderr>:Some weights of GPT2ForSequenceClassification were not initialized from the model checkpoint at gpt2 and are newly initialized: ['score.weight']
+[1,0]<stderr>:You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+[1,0]<stderr>:  0%|          | 0/100 [00:00<?, ?it/s][1,0]<stderr>:100%|██████████| 100/100 [00:00<00:00, 1228.95it/s][1,0]<stderr>:
+[1,0]<stderr>:***** Running training *****
+[1,0]<stderr>:  Num examples = 85
+[1,0]<stderr>:  Num Epochs = 5
+[1,0]<stderr>:  Instantaneous batch size per device = 4
+[1,0]<stderr>:  Total train batch size (w. parallel, distributed & accumulation) = 32
+[1,0]<stderr>:  Gradient Accumulation steps = 4
+[1,0]<stderr>:  Total optimization steps = 10
+[1,0]<stderr>:  0%|          | 0/10 [00:00<?, ?it/s][1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
+[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/cuda/nccl.py:47: DeprecationWarning: Using or importing the ABCs from 'collections' instead of from 'collections.abc' is deprecated since Python 3.3, and in 3.10 it will stop working
+[1,0]<stderr>:  if not isinstance(inputs, collections.Container) or isinstance(inputs, torch.Tensor):
+[1,0]<stderr>: 10%|█         | 1/10 [00:04<00:39,  4.40s/it][1,0]<stderr>: 20%|██        | 2/10 [00:06<00:22,  2.76s/it][1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-2
+[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-2/config.json
+[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-2/pytorch_model.bin
+[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
+[1,0]<stderr>: 30%|███       | 3/10 [00:10<00:24,  3.44s/it][1,0]<stderr>: 40%|████      | 4/10 [00:11<00:16,  2.70s/it][1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-4
+[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-4/config.json
+[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-4/pytorch_model.bin
+[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
+[1,0]<stderr>: 50%|█████     | 5/10 [00:15<00:16,  3.23s/it][1,0]<stderr>: 60%|██████    | 6/10 [00:17<00:10,  2.67s/it][1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-6
+[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-6/config.json
+[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-6/pytorch_model.bin
+[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
+[1,0]<stderr>: 70%|███████   | 7/10 [00:21<00:09,  3.16s/it][1,0]<stderr>: 80%|████████  | 8/10 [00:23<00:05,  2.66s/it][1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-8
+[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-8/config.json
+[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-8/pytorch_model.bin
+[1,0]<stderr>:/nobackup/users/gtangg12/anaconda3/envs/task_planning_babyai/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+[1,0]<stderr>:  warnings.warn('Was asked to gather along dimension 0, but all '
+[1,0]<stderr>: 90%|█████████ | 9/10 [00:27<00:03,  3.12s/it][1,0]<stderr>:100%|██████████| 10/10 [00:29<00:00,  2.65s/it][1,0]<stderr>:Saving model checkpoint to /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-10
+[1,0]<stderr>:Configuration saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-10/config.json
+[1,0]<stderr>:Model weights saved in /nobackup/users/gtangg12/task_planning_bayes_factor/checkpoints/babyai_lm/checkpoint-10/pytorch_model.bin
+[1,0]<stderr>:
+[1,0]<stderr>:
+[1,0]<stderr>:Training completed. Do not forget to share your model on huggingface.co/models =)
+[1,0]<stderr>:
+[1,0]<stderr>:
+[1,0]<stderr>:                                               [1,0]<stderr>:[1,0]<stderr>:100%|██████████| 10/10 [00:30<00:00,  2.65s/it]100%|██████████| 10/10 [00:30<00:00,  3.06s/it]
