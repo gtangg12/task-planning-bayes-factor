@@ -1,7 +1,8 @@
 import os
 from os.path import join
-from dataclasses import dataclass
 from typing import Dict
+
+from experiment_args import ExperimentArgs
 
 
 # absolute directory of work ecosystem
@@ -25,12 +26,6 @@ def make_args(args: Dict) -> str:
         cmd.append(f'--{key} {value}')
     # wrap in quotes for bash script to pass args as string to python script
     return wrap_quotes(' '.join(cmd))
-
-
-@dataclass
-class ExperimentArgs:
-    pass
-    # TODO gpus cpus etc pipelines
 
 
 class Experiment:

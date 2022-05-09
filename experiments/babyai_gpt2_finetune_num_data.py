@@ -1,6 +1,7 @@
 import os
 
-from experiment_utils import Experiment, ExperimentArgs
+from experiment import Experiment
+from experiment_args import ExperimentArgs
 
 
 EXPERIMENT_NAME = 'babyai_gpt2_finetune_num_data'
