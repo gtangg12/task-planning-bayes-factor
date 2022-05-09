@@ -36,7 +36,6 @@ args = parser.parse_args()
 os.makedirs(args.logging_dir, exist_ok=True)
 os.makedirs(args.checkpoints_dir, exist_ok=True)
 
-exit()
 
 ''' Metrics '''
 classification_accuracy = load_metric('classification', 'accuracy')
@@ -61,7 +60,8 @@ sequences = load_from_dir(
     load_fn=load_sequences,
     filename_filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS 
 )
-
+print(len(sequences))
+exit()
 
 ''' Datasets '''
 babyai_sequence_dataset = BabyaiSequenceDataset(sequences)
