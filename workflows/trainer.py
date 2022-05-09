@@ -76,8 +76,8 @@ class Trainer:
         if self.criterion is None:
             raise ValueError("Trainer: training requires a criterion or compute_loss() to be overridden.")
 
-        labels = inputs.pop('labels')
-        logits = self.model(*inputs)
+        labels = inputs.pop('label')
+        logits = self.model(inputs)
         loss = self.criterion(logits, labels)
         return (loss, logits) if return_outputs else loss
     

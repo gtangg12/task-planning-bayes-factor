@@ -10,7 +10,7 @@ from babyai.common import *
 
 from datasets.task_sequence_dataset import (
     TaskCompletitionDataset, 
-    TaskSequenceDict
+    TaskCompletitionDict
 )
 from babyai_task_sequence import BabyaiTaskSequence
 
@@ -39,7 +39,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
     NEGATIVE_SAMPLE_SUFFIX_LEN = 1
 
     @classmethod
-    def encode(cls, sequence: BabyaiTaskSequence) -> TaskSequenceDict:
+    def encode(cls, sequence: BabyaiTaskSequence) -> TaskCompletitionDict:
         encoded = {}
         encoded['taskname'] = sequence.task.name
         encoded['task'] = encode_babyai_task(sequence.task.description)
@@ -63,10 +63,13 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         assert(encoded['actions'].shape == (len(sequence), cls.EMBEDDING_DIM))
         encoded.pop('directions')
 
-        return TaskSequenceDict(encoded)
+        # valid task sequence
+        encoded['label'] = True
+
+        return TaskCompletitionDict(encoded)
 
     @classmethod
-    def negative_sample(cls, encoded: TaskSequenceDict) -> TaskSequenceDict:
+    def negative_sample(cls, encoded: TaskCompletitionDict) -> TaskCompletitionDict:
         n_resampled = cls.NEGATIVE_SAMPLE_SUFFIX_LEN
         sequence_len = encoded['sequence_len'] 
         suffix_begin = sequence_len - n_resampled
@@ -82,6 +85,10 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         resampled_actions_encoded = F.one_hot(resampled_actions, num_classes=NUM_ACTIONS)
         # set actions component of babyai action tensor to resampled actions
         resampled_encoded['actions'][suffix_begin:, :NUM_ACTIONS] = resampled_actions_encoded
+
+        # not valid sequence anymore
+        resampled_encoded['label'] = False
+
         return resampled_encoded
 
 

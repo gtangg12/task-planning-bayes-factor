@@ -92,7 +92,7 @@ class ClassifierFilmRNN(nn.Module):
     def forward(self, inputs): 
         # Example dims:
         # task, actor_info, images, task_len, seq_len
-        # torch.Size([8, 5, 128]) torch.Size([8, 7, 128]) torch.Size([8, 7, 19, 7, 7]) torch.Size([8]) torch.Size([8])
+        # torch.Size([8, 5, 128]) torch.Size([8, 7, 128]) torch.Size([8, 7, 19, 7, 7]) torch.tensor([8]) torch.tensor([8])
         task_batch, images_batch, actions_batch = inputs['task'], inputs['images'], inputs['actions']
         task_lens, sequence_lens = inputs['task_len'], inputs['sequence_len']
 
@@ -136,7 +136,7 @@ class ClassifierFilmRNN(nn.Module):
             different lengths 
         """
         input =  pack_padded_sequence(input,
-                                      seq_len.cpu(),
+                                      seq_len,
                                       batch_first=True,
                                       enforce_sorted=False)
         rnn.flatten_parameters()

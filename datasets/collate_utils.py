@@ -33,6 +33,6 @@ def collate_list_of_dict(batch: List[Dict], keys: Iterable, map_list_as_tensor: 
         if map_list_as_tensor:
             if not len(collated[key]) or isinstance(collated[key][0], TORCH_PRIMATIVES):
                 collated[key] = torch.tensor(collated[key])
-            if isinstance(collated[key][0], torch.Tensor):
+            elif isinstance(collated[key][0], torch.Tensor):
                 collated[key] = torch.stack(collated[key])
     return collated

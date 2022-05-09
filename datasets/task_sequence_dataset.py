@@ -18,6 +18,10 @@ class TaskSequenceDict(TypedDict):
     sequence_len : int
 
 
+class TaskCompletitionDict(TaskSequenceDict):
+    label: bool
+
+
 class TaskSequenceDataset(Dataset):
     def __init__(self, sequences: List[TaskSequence]) -> None:
         self.sequences = sequences
@@ -26,7 +30,7 @@ class TaskSequenceDataset(Dataset):
     def __len__(self) -> int:
         return len(self.sequences)
     
-    def __getitem__(self, idx: int) -> Dict:
+    def __getitem__(self, idx: int) -> TaskSequenceDict:
         return self.sequences[idx]
 
     @classmethod
@@ -39,23 +43,28 @@ class TaskCompletitionDataset(TaskSequenceDataset):
         super().__init__(sequences)
         self.negative_sample_rate = negative_sample_rate  
 
-    def __getitem__(self, idx: int) -> Dict:
+    def __getitem__(self, idx: int) -> TaskCompletitionDict:
         encoded = self.encoded[idx]
-        encoded['label'] = True
         if random.random() < self.negative_sample_rate:
             encoded = self.negative_sample(encoded)
-            encoded['label'] = False
         return encoded
     
     @classmethod
-    def negative_sample(cls, encoded: TaskSequenceDict) -> TaskSequenceDict:
+    def negative_sample(cls, encoded: TaskCompletitionDict) -> TaskCompletitionDict:
        raise NotImplementedError
 
 
-def collate_fn(batch: List[TaskSequenceDict]) -> Dict:
+def collate_fn(batch: List[TaskCompletitionDict]) -> Dict:
     batched = {}
-    for name in TaskSequenceDict.__annotations__.keys():
-        batched.update(collate_list_of_dict(batch, {name}))
-        if name not in ['taskname', 'task_len', 'sequence_len']:
-            batched[name] = pad_sequence(batched[name], batch_first=True)
+    batched.update(
+        collate_list_of_dict(batch, {'taskname', 'task', 'images', 'actions'})
+    )
+    for name in ['images', 'actions', 'task']:
+        batched[name] = pad_sequence(batched[name], batch_first=True)
+    batched.update(
+        collate_list_of_dict(batch, {'task_len', 'sequence_len', 'label'}, map_list_as_tensor=True)
+    )
+    print(batched)
+    exit()
+
     return batched
