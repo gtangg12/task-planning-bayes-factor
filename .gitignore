@@ -3,6 +3,9 @@ data/
 checkpoints/
 environments/
 
+# Slurm
+'nodelist.$'
+
 # VS Code
 .vscode/
 

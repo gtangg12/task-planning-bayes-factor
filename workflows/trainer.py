@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Any, Callable, NewType, Optional
+from typing import Any, List, Dict, Callable, NewType, Optional
 
 import torch
 import torch.nn as nn
@@ -13,10 +13,10 @@ from training_args import TrainingArguments
 # TODO figure out how to make inputdata consistent
 InputData = NewType('InputDataClass', Any)
 
-DataCollator = Callable[[list[InputData]], dict[str, Any]]
+DataCollator = Callable[[List[InputData]], Dict[str, Any]]
 
 Loss = float
-OutputDataList, LabelDataList = list[InputData], list[Any]
+OutputDataList, LabelDataList = List[InputData], List[Any]
 Prediction = [Loss, OutputDataList, LabelDataList, Dataset]
 
 
@@ -31,7 +31,7 @@ class Trainer:
         data_collator: Optional[DataCollator] = None,
         train_dataset: Optional[Dataset] = None,
         eval_dataset: Optional[Dataset] = None,
-        compute_metrics: Optional[Callable[[Prediction], dict]] = None,
+        compute_metrics: Optional[Callable[[Prediction], Dict]] = None,
         criterion: Optional[Callable[[InputData, InputData], Loss]] = None,
         optimizer: Optional[torch.optim.Optimizer] = None,
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None
@@ -83,22 +83,22 @@ class Trainer:
             raise ValueError("Trainer: training requires a criterion or compute_loss() to be overridden.")
 
         labels = inputs.pop('labels')
-        outputs = self.model(*inputs)
-        loss = self.criterion(outputs, labels)
-        return (loss, outputs) if return_outputs else loss
+        logits = self.model(*inputs)
+        loss = self.criterion(logits, labels)
+        return (loss, logits) if return_outputs else loss
     
     def training_step(self, inputs, epoch):
-        loss, outputs = self.compute_loss(inputs, return_outputs=True)
-
+        loss, logits = self.compute_loss(inputs, return_outputs=True)
+        
         if epoch % self.args.gradient_accumulation_epochs == 0:
             loss.backward()
             self.optimizer.step()
             self.optimizer.zero_grad()
-        return loss, outputs
+        return loss, logits
 
     def prediction_step(self, inputs):
-        loss, outputs = self.compute_loss(inputs, return_outputs=True)
-        return loss, outputs
+        loss, logits = self.compute_loss(inputs, return_outputs=True)
+        return loss, logits
     
     def train(self):
         if not self.train_dataloader:
@@ -110,12 +110,12 @@ class Trainer:
             print(f'Epoch-{epoch}')
 
             train_loss = 0
-            outputs, labels = [], []
+            logits, labels = [], []
             self.model.train()
             for step, inputs in enumerate(tqdm(self.train_dataloader)):
-                loss, outputs = self.training_step(inputs, epoch)
+                loss, _logits = self.training_step(inputs, epoch)
                 train_loss += loss.item()
-                outputs.append(outputs)
+                logits.append(_logits)
                 labels.append(inputs['labels'])
             train_loss /= len(self.train_dataloader)
 
@@ -129,7 +129,9 @@ class Trainer:
 
             train_metrics = {'train_loss': train_loss}
             if self.compute_metrics:
-                train_metrics.update(self.compute_metrics(train_loss, outputs, labels, self.train_dataset))
+                train_metrics.update(
+                    self.compute_metrics(torch.cat(logits), torch.cat(labels))
+                )
 
             if self.args.logging_dir and epoch % self.args.logging_interval == 0:
                 self.log(f'train_{epoch:03d}', train_metrics)
@@ -140,19 +142,21 @@ class Trainer:
 
     def evaluate(self, loader: DataLoader):
         eval_loss = 0
-        outputs, labels = [], []
+        logits, labels = [], []
         self.model.eval()
         with torch.no_grad():
             for step, inputs in enumerate(tqdm(loader)):
-                loss, outputs = self.prediction_step(inputs)
+                loss, _logits = self.prediction_step(inputs)
                 eval_loss += loss.item()
-                outputs.append(outputs)
+                logits.append(_logits)
                 labels.append(inputs['labels'])
         eval_loss /= len(self.eval_loader)
         
         metrics = {'eval_loss': eval_loss}
         if self.compute_metrics:
-           metrics.update(self.compute_metrics(eval_loss, outputs, labels, self.eval_dataset))
+           metrics.update(
+               self.compute_metrics(torch.cat(logits), torch.cat(labels))
+            )
         return metrics
 
     def predict(self, test_dataset: Dataset):

@@ -1,15 +1,15 @@
 import random
-import itertools
 import inspect
+import itertools
+from typing import List, Tuple
 from collections import Counter, defaultdict
 
 import torch
+
 from babyai.common import *
 
 from datasets.formats.task_sequence import TaskSequence
 
-
-# TODO align with babyai infra i.e. minigrid env to refactor and simplify
 
 EGO_ROW = VIEW_SHAPE[0] - 1
 EGO_COL = VIEW_SHAPE[1] // 2
@@ -40,7 +40,7 @@ EGO_VIEW_ENCODINGS = {
 }
 
 
-def make_view_partition(view_encoding: str) -> list[tuple[int, int]]:
+def make_view_partition(view_encoding: str) -> List[Tuple[int, int]]:
     """ Generate view encoding from the perspective of the ego agent.
         Resulting dict: { statement : [(r, c)...] }
     """
@@ -83,7 +83,7 @@ def location_string(image: torch.tensor, r: int, c: int):
     return f'{color} {object}'
 
 
-def region_description(image: torch.Tensor, region: list[tuple[int, int]]) -> str:
+def region_description(image: torch.Tensor, region: List[Tuple[int, int]]) -> str:
     """ Helper function to generate a grammatically correct description of a region, 
         a list of coordinate tuples """
     description = []
@@ -138,20 +138,20 @@ class TaskSequencePromptBuilder():
         inventory_history = []
         item = None
         for frame in sequence.frames:
-            action = frame.action.name
-            if action == 'pickup':
-                item = location_string(frame.image)
-            elif action == 'drop':
-                item = None
             inventory_history.append(item)
+            if frame.action.name == 'pickup':
+                item = location_string(frame.image, EGO_ROW - 1, EGO_COL)
+            elif frame.action.name == 'drop':
+                item = None
         return inventory_history
   
     def generate_env_description(self, timestamp: int) -> str:
         """ Generate a verbal description of the actor's current state """
         image = self.sequence.frames[timestamp].image
         description = [image_description(image, self.view_partition)]
-        if self.inventory_history[timestamp]:
-            description.append(f'You are carrying a {self.inventory_item}.')
+        inventory_item = self.inventory_history[timestamp]
+        if inventory_item:
+            description.append(f'You are carrying a {inventory_item}.')
         else:
             description.append('You are not carrying anything.')
         return ' '.join(description)
@@ -161,7 +161,7 @@ class TaskSequencePromptBuilder():
         return self.sequence.frames[timestamp].action.name
 
 
-def generate_env_description(sequence, view_encoding='cardinal_diagonal'):
+def generate_env_description(sequence: TaskSequence, view_encoding='cardinal_diagonal'):
     """ Generate a sample of textual descriptions from a sequence """    
     timestamp = random.randint(0, len(sequence) - 1)
     
@@ -170,3 +170,11 @@ def generate_env_description(sequence, view_encoding='cardinal_diagonal'):
     prompt = generator.generate_env_description(timestamp)
     action = generator.get_action_taken(timestamp)
     return prompt, action
+
+
+if __name__ == '__main__':
+    from babyai_task_sequence import load_sequences
+    sequences = load_sequences('data/babyai/task_sequence_chunked/BossLevel_000.pkl')
+    for sequence in sequences[:10]:
+        print(generate_env_description(sequence))
+        
