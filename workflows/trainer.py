@@ -78,6 +78,8 @@ class Trainer:
 
         labels = inputs.pop('label')
         logits = self.model(inputs)
+        print(logits.shape)
+        exit()
         loss = self.criterion(logits, labels)
         return (loss, logits) if return_outputs else loss
     
@@ -107,7 +109,6 @@ class Trainer:
             logits, labels = [], []
             self.model.train()
             for step, inputs in enumerate(tqdm(self.train_dataloader)):
-                print(inputs)
                 loss, _logits = self.training_step(inputs, epoch)
                 exit()
                 train_loss += loss.item()

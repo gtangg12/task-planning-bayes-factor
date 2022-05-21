@@ -64,7 +64,4 @@ def collate_fn(batch: List[TaskCompletitionDict]) -> Dict:
     batched.update(
         collate_list_of_dict(batch, {'task_len', 'sequence_len', 'label'}, map_list_as_tensor=True)
     )
-    print(batched)
-    exit()
-
     return batched

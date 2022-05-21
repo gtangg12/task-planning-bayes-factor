@@ -22,7 +22,7 @@ class ResidualBLockFilm(nn.Module):
         return x + residual
 
 
-class FilmCNN(nn.Module):
+class CNNFilm(nn.Module):
     def __init__(self, num_channels, dim):
         super().__init__()
         self.cnn = nn.Sequential(
@@ -65,7 +65,7 @@ class ClassifierFilmRNN(nn.Module):
         ])
 
         # film cnn for task sequence encodings
-        self.cnn = FilmCNN(num_channels, num_cnn_kernels)
+        self.cnn = CNNFilm(num_channels, num_cnn_kernels)
 
         # flatten film features into embedding
         embedding_dim = 1024
@@ -98,8 +98,8 @@ class ClassifierFilmRNN(nn.Module):
 
         batch_size, padded_sequence_len = images_batch.shape[0], images_batch.shape[1]
 
-        print(task_batch.shape, actions_batch.shape, images_batch.shape)
-        print(batch_size, padded_sequence_len)
+        #print(task_batch.shape, actions_batch.shape, images_batch.shape)
+        #print(batch_size, padded_sequence_len)
 
         # extract final task rnn output from each batch element
         task_batch = self._forward_rnn(task_batch, task_lens, self.task_encoder) 
