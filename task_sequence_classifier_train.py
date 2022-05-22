@@ -45,13 +45,23 @@ label_frequency = load_metric('classification', 'label_frequency')
 
 def compute_metrics(outputs):
     logits, labels = outputs
-    logits, labels = torch.from_numpy(logits), torch.from_numpy(labels)
+    labels = labels.squeeze()
     _, preds = torch.max(logits, dim=1)
+    print(preds)
     return {
         'accuracy': classification_accuracy(preds, labels),
         'preds_freq': label_frequency(preds),
         'labels_freq': label_frequency(labels),
     }
+
+
+''' Loss '''
+bce_loss = nn.BCELoss()
+
+def loss_fn(logits, labels):
+    labels = torch.unsqueeze(labels, dim=1)
+    labels = labels.float()
+    return bce_loss(logits, labels)
 
 
 ''' Loading Data '''
@@ -99,7 +109,7 @@ trainer = Trainer(
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     compute_metrics=compute_metrics,
-    criterion=nn.BCELoss(),
+    criterion=loss_fn,
     optimizer=torch.optim.Adam(model.parameters(), lr=5e-5),
     scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min'),
 )
