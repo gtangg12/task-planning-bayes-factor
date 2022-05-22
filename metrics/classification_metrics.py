@@ -7,9 +7,9 @@ def accuracy(preds: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
         preds: (num_data, num_classes) tensor of logits
         labels: (num_data) tensor of labels
     Returns:
-        accuracy: scalar tensor of accuracy
+        accuracy scalar
     """
-    return torch.mean((preds == labels).float())
+    return torch.mean((preds == labels).float()).item()
 
 
 def label_frequency(labels: torch.Tensor) -> torch.Tensor:
@@ -17,7 +17,7 @@ def label_frequency(labels: torch.Tensor) -> torch.Tensor:
     Args:
         labels: (num_data) tensor of labels
     Returns:
-        (num_classes) tensor where index i is the frequency of label i
+        dict mapping indicies (num_classes) to their frequency counts
     """
     frequency = torch.bincount(labels)
     return {i: f.item() for i, f in enumerate(frequency)}
@@ -28,7 +28,7 @@ def label_frequency_norm(labels: torch.Tensor) -> torch.Tensor:
     Args:
         labels: (num_data) tensor of labels
     Returns:
-        (num_classes) tensor where index i is the normalized frequency of label i
+        dict mapping indicies (num_classes) to their normalized frequency counts
     """
     frequency = label_frequency(labels)
     sum = sum(frequency.values())

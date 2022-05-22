@@ -113,25 +113,25 @@ class Trainer:
                 labels.append(inputs['label'])
             train_loss /= len(self.train_dataloader)
 
+            train_metrics = {'train_loss': train_loss}
+            if self.compute_metrics:
+                train_metrics.update(
+                    self.compute_metrics((torch.cat(logits), torch.cat(labels)))
+                )
+
             eval_metrics = self.evaluate(self.eval_dataloader) if self.eval_dataloader else None
-            print(eval_metrics)
-            exit()
-            
+
             if self.scheduler:
                 if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
                     self.scheduler.step(eval_metrics['eval_loss'])
                 else:
                     self.scheduler.step()
 
-            train_metrics = {'train_loss': train_loss}
-            if self.compute_metrics:
-                train_metrics.update(
-                    self.compute_metrics(torch.cat(logits), torch.cat(labels))
-                )
-
-            if self.args.logging_dir and epoch % self.args.logging_interval == 0:
+            if self.args.logging_dir and epoch % self.args.logging_epochs == 0:
                 self.log(f'train_{epoch:03d}', train_metrics)
                 self.log(f'eval_{epoch:03d}', eval_metrics)
+            
+            exit()
 
             if self.args.save_dir and epoch % self.args.save_epochs == 0:
                 self.save_checkpoint(epoch)
@@ -161,6 +161,7 @@ class Trainer:
         return test_metrics
 
     def log(self, entry_name, metrics):
+        print(metrics)
         logging_filename = f'{self.args.logging_dir}/{entry_name}_metrics.json'
         with open(logging_filename, 'w') as f:
             json.dump(metrics, f)

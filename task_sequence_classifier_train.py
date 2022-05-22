@@ -45,9 +45,7 @@ label_frequency = load_metric('classification', 'label_frequency')
 
 def compute_metrics(outputs):
     logits, labels = outputs
-    labels = labels.squeeze()
     _, preds = torch.max(logits, dim=1)
-    print(preds)
     return {
         'accuracy': classification_accuracy(preds, labels),
         'preds_freq': label_frequency(preds),
