@@ -75,11 +75,9 @@ class Trainer:
     def compute_loss(self, inputs, return_outputs=False):
         if self.criterion is None:
             raise ValueError("Trainer: training requires a criterion or compute_loss() to be overridden.")
-
-        labels = inputs.pop('label')
+            
+        labels = inputs['label']
         logits = self.model(inputs)
-        print(logits.shape)
-        exit()
         loss = self.criterion(logits, labels)
         return (loss, logits) if return_outputs else loss
     
@@ -110,13 +108,14 @@ class Trainer:
             self.model.train()
             for step, inputs in enumerate(tqdm(self.train_dataloader)):
                 loss, _logits = self.training_step(inputs, epoch)
-                exit()
                 train_loss += loss.item()
                 logits.append(_logits)
-                labels.append(inputs['labels'])
+                labels.append(inputs['label'])
             train_loss /= len(self.train_dataloader)
 
-            eval_metrics = self.evaluate(self.eval_loader, epoch) if self.eval_dataloader else None
+            eval_metrics = self.evaluate(self.eval_dataloader) if self.eval_dataloader else None
+            print(eval_metrics)
+            exit()
             
             if self.scheduler:
                 if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -146,8 +145,8 @@ class Trainer:
                 loss, _logits = self.prediction_step(inputs)
                 eval_loss += loss.item()
                 logits.append(_logits)
-                labels.append(inputs['labels'])
-        eval_loss /= len(self.eval_loader)
+                labels.append(inputs['label'])
+        eval_loss /= len(self.eval_dataloader)
         
         metrics = {'eval_loss': eval_loss}
         if self.compute_metrics:

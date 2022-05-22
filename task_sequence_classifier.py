@@ -93,14 +93,16 @@ class ClassifierFilmRNN(nn.Module):
         # Example dims:
         # task, actor_info, images, task_len, seq_len
         # torch.Size([8, 5, 128]) torch.Size([8, 7, 128]) torch.Size([8, 7, 19, 7, 7]) torch.tensor([8]) torch.tensor([8])
-        task_batch, images_batch, actions_batch = inputs['task'], inputs['images'], inputs['actions']
-        task_lens, sequence_lens = inputs['task_len'], inputs['sequence_len']
-
+        task_batch, images_batch, actions_batch = \
+            inputs['task'].float(), inputs['images'].float(), inputs['actions'].float()
+        task_lens, sequence_lens = \
+            inputs['task_len'], inputs['sequence_len']
+            
         batch_size, padded_sequence_len = images_batch.shape[0], images_batch.shape[1]
 
-        print(task_batch.shape, actions_batch.shape, images_batch.shape)
-        print(batch_size, padded_sequence_len)
-        exit()
+        #print(task_batch, actions_batch, images_batch)
+        #print(batch_size, padded_sequence_len)
+
         # extract final task rnn output from each batch element
         task_batch = self._forward_rnn(task_batch, task_lens, self.task_encoder) 
         task_batch = torch.stack([task_batch[i, idx - 1, :] for i, idx in enumerate(task_lens)])

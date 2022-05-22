@@ -65,7 +65,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         encoded.pop('directions')
 
         # valid task sequence
-        encoded['label'] = True
+        encoded['label'] = torch.tensor([1.0])
 
         return TaskCompletitionDict(encoded)
 
@@ -88,7 +88,7 @@ class BabyaiSequenceDataset(TaskCompletitionDataset):
         resampled_encoded['actions'][suffix_begin:, :NUM_ACTIONS] = resampled_actions_encoded
 
         # not valid sequence anymore
-        resampled_encoded['label'] = False
+        resampled_encoded['label'] = torch.tensor([0.0])
 
         return resampled_encoded
 
