@@ -98,9 +98,9 @@ class ClassifierFilmRNN(nn.Module):
 
         batch_size, padded_sequence_len = images_batch.shape[0], images_batch.shape[1]
 
-        #print(task_batch.shape, actions_batch.shape, images_batch.shape)
-        #print(batch_size, padded_sequence_len)
-
+        print(task_batch.shape, actions_batch.shape, images_batch.shape)
+        print(batch_size, padded_sequence_len)
+        exit()
         # extract final task rnn output from each batch element
         task_batch = self._forward_rnn(task_batch, task_lens, self.task_encoder) 
         task_batch = torch.stack([task_batch[i, idx - 1, :] for i, idx in enumerate(task_lens)])
@@ -135,10 +135,10 @@ class ClassifierFilmRNN(nn.Module):
         """ Helper function for evaluating rnn given input batch where every element has 
             different lengths 
         """
-        input =  pack_padded_sequence(input,
-                                      seq_len,
-                                      batch_first=True,
-                                      enforce_sorted=False)
+        input = pack_padded_sequence(input, 
+                                     seq_len, 
+                                     batch_first=True, 
+                                     enforce_sorted=False)
         rnn.flatten_parameters()
         output, _ = rnn(input)
         output, _ = pad_packed_sequence(output, batch_first=True)

@@ -18,7 +18,8 @@ from babyai_task_sequence import BabyaiTaskSequence
 def encode_babyai_task(task):
     """ Numerically encode the words of task str """
     words = task.replace(',', '').split(' ')
-    return torch.tensor([VOCAB_TO_INDEX[w] for w in words])
+    words = torch.tensor([VOCAB_TO_INDEX[w] for w in words])
+    return F.one_hot(words, VOCAB_SIZE)
 
 
 def encode_babyai_images(images):
