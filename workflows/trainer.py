@@ -127,13 +127,11 @@ class Trainer:
                 else:
                     self.scheduler.step()
 
-            if self.args.logging_dir and epoch % self.args.logging_epochs == 0:
+            if self.args.logging_dir and (epoch + 1) % self.args.logging_epochs == 0:
                 self.log(f'train_{epoch:03d}', train_metrics)
                 self.log(f'eval_{epoch:03d}', eval_metrics)
-            
-            exit()
 
-            if self.args.save_dir and epoch % self.args.save_epochs == 0:
+            if self.args.save_dir and (epoch + 1) % self.args.save_epochs == 0:
                 self.save_checkpoint(epoch)
 
     def evaluate(self, loader: DataLoader):
@@ -161,13 +159,13 @@ class Trainer:
         return test_metrics
 
     def log(self, entry_name, metrics):
-        print(metrics)
         logging_filename = f'{self.args.logging_dir}/{entry_name}_metrics.json'
         with open(logging_filename, 'w') as f:
             json.dump(metrics, f)
 
     def save_checkpoint(self, epoch):
         checkpoint_filename = f'{self.args.save_dir}/{epoch:03d}_checkpoint.pt'
+        print(checkpoint_filename)
         torch.save({
             'model': self.model.state_dict(),
             'epoch': epoch,
