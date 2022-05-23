@@ -9,13 +9,17 @@ from tqdm import tqdm
 from metrics import Logits, Labels
 from datasets.collate_utils import DataCollatorFunc
 from workflows.training_args import TrainingArguments
-
+from workflows.trainer_utils import (
+    NUM_DEVICES_AVAILABLE,
+    DEFAULT_DEVICE,
+    inputs_to_device,
+)
 
 Loss = float
 
 
 #TODO support start from epoch
-#TODO multiple GPUs
+
 
 class Trainer:
     def __init__(
@@ -31,6 +35,10 @@ class Trainer:
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None
     ):
         self.model = model
+        # use all gpus available
+        model = nn.DataParallel(model).to(DEFAULT_DEVICE)
+        model.to(DEFAULT_DEVICE)
+        
         self.args = args
 
         self.data_collator = data_collator
@@ -53,7 +61,7 @@ class Trainer:
         
         return DataLoader(
             dataset,
-            batch_size=self.args.per_device_train_batch_size,
+            batch_size=self.args.per_device_train_batch_size * NUM_DEVICES_AVAILABLE,
             shuffle=self.args.shuffle,
             collate_fn=self.data_collator,
             num_workers=self.args.dataloader_num_workers,
@@ -66,7 +74,7 @@ class Trainer:
 
         return DataLoader(
             dataset,
-            batch_size=self.args.per_device_eval_batch_size,
+            batch_size=self.args.per_device_eval_batch_size * NUM_DEVICES_AVAILABLE,
             shuffle=False,
             collate_fn=self.data_collator,
             num_workers=self.args.dataloader_num_workers,
@@ -75,7 +83,7 @@ class Trainer:
     def compute_loss(self, inputs, return_outputs=False):
         if self.criterion is None:
             raise ValueError("Trainer: training requires a criterion or compute_loss() to be overridden.")
-            
+
         labels = inputs['label']
         logits = self.model(inputs)
         loss = self.criterion(logits, labels)
@@ -107,6 +115,7 @@ class Trainer:
             logits, labels = [], []
             self.model.train()
             for step, inputs in enumerate(tqdm(self.train_dataloader)):
+                inputs_to_device(inputs, DEFAULT_DEVICE)
                 loss, _logits = self.training_step(inputs, epoch)
                 train_loss += loss.item()
                 logits.append(_logits)
@@ -140,6 +149,7 @@ class Trainer:
         self.model.eval()
         with torch.no_grad():
             for step, inputs in enumerate(tqdm(loader)):
+                inputs_to_device(inputs, DEFAULT_DEVICE)
                 loss, _logits = self.prediction_step(inputs)
                 eval_loss += loss.item()
                 logits.append(_logits)

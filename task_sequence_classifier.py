@@ -138,7 +138,7 @@ class ClassifierFilmRNN(nn.Module):
             different lengths 
         """
         input = pack_padded_sequence(input, 
-                                     seq_len, 
+                                     seq_len.cpu(), 
                                      batch_first=True, 
                                      enforce_sorted=False)
         rnn.flatten_parameters()
