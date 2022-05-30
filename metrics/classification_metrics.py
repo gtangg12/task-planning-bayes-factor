@@ -25,33 +25,40 @@ def label_frequency(labels: torch.Tensor, num_classes: int) -> torch.Tensor:
     return F.pad(counts, padding)
 
 
-def label_frequency_norm(labels: torch.Tensor) -> torch.Tensor:
+def norm_label_frequency(freq: torch.Tensor) -> torch.Tensor:
     """ Computes the normalized frequency of each label.
     Args:
-        Same as label_frequency
+        (num_classes) tensor of label frequencies
     Returns:
-        (num_classes) tensor mapping indicies to their normalized frequency counts
+        (num_classes) nomralized label frequencies
     """
-    freq = label_frequency(labels)
     return freq / torch.sum(freq)
 
 
-def kl_divergence(freq_x_norm: torch.Tensor, freq_y_norm: torch.Tensor) -> float:
+def kl_divergence(x_freq: torch.Tensor, y_freq: torch.Tensor) -> float:
     """ Computes the KL-divergence between two label frequency distributions.
     Args:
-        freq_x_norm: (num_classes) tensor of norm label frequencies
-        freq_y_norm: (num_classes) tensor of norm label frequencies
+        freqx: (num_classes) tensor of label frequencies
+        freqy: (num_classes) tensor of label frequencies
     Returns:
         KL-divergence scalar
     """
-    return F.kl_div(freq_x_norm, freq_y_norm)
+    x_freq = norm_label_frequency(x_freq + 1) # smooth distributions to avoid inifinite KL 
+    y_freq = norm_label_frequency(y_freq + 1) 
+    return F.kl_div(x_freq.log(), y_freq)
 
 
-def kl_divergence_symmetric(freq_x_norm: torch.Tensor, freq_y_norm: torch.Tensor) -> float:
+def kl_divergence_symmetric(x_freq: torch.Tensor, y_freq: torch.Tensor) -> float:
     """ Computes the Jensen-Shannon Divergence between two label frequency distributions.
     Args:
         Same as KL-divergence
     Returns:
         Jensen-Shannon Divergence scalar
     """
-    return 0.5 * (kl_divergence(freq_x_norm, freq_y_norm) + kl_divergence(freq_y_norm, freq_x_norm))
+    return 0.5 * (kl_divergence(x_freq, y_freq) + kl_divergence(y_freq, x_freq))
+
+
+if __name__ == '__main__':
+    a = torch.tensor([23, 76, 580, 33, 0, 38, 0])
+    b = torch.tensor([94, 129, 466, 19, 5, 37, 0])
+    print(kl_divergence(a, b))
