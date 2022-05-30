@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from typing import Any, List, Dict, Callable, Optional, NewType
 
 import torch
@@ -185,7 +186,7 @@ class Trainer:
             if isinstance(value, (int, float)):
                 self.tb_writer.add_scalar(f'{entry_name}/{key}', value, epoch)
             else:
-                continue
+                logging.warning(f'Attempted to log non-scalar value {key} to tensorboard, so we dropped attribute.')
         self.tb_writer.flush()
 
     def save_checkpoint(self, epoch):

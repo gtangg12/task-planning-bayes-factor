@@ -1,3 +1,4 @@
+import logging
 import os
 import argparse
 
@@ -93,9 +94,10 @@ model.config.pad_token_id = tokenizer.pad_token_id
 ''' Training '''
 training_args = TransformersTrainingArguments(
     output_dir=args.checkpoints_dir, 
-    logging_strategy='no',
     evaluation_strategy='epoch', 
     save_strategy='epoch',
+    logging_strategy='epoch',
+    logging_dir=args.logging_dir + '/tensorboard', # logging_dir refers to tensorboard
     gradient_accumulation_steps=4, 
     num_train_epochs=5,
     per_device_train_batch_size=4,

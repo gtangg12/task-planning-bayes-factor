@@ -27,6 +27,16 @@ def default_make_run_name(run_params: Dict, run_index: int) -> str:
     return '_'.join(name)
 
 
+def append_sbatch_logs(sbatch_args: List, run_name: str, logging_dir: str) -> List:
+    """ Helper function to add slurm log files to sbatch_args """
+    sbatch_args.extend([
+        f'job-name={run_name}',
+        f'output={logging_dir}/slurm.out',
+        f'error={logging_dir}/slurm.err',
+    ])
+    return sbatch_args
+
+
 def make_args_command_sbatch(args: List) -> str:
     """ Helper function to make a string of sbatch arguments from args dict """
     cmd = []

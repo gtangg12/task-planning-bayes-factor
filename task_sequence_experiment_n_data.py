@@ -35,7 +35,7 @@ sbatch_args = [
     'mail-type=NONE',
     'nodes=1',
     'ntasks-per-node=1',
-    'cpus-per-task=4',
+    'cpus-per-task=2',
     'gres=gpu:1',
     'mem=256G',
     'time=24:00:00',
@@ -45,14 +45,14 @@ experiment_args = ExperimentArguments(
     name=args.name,
     script=experiment_dict['script'],
     conda_env='task_planning_babyai',
-    n_trials=1,
+    n_trials=4,
     data_dir=experiment_dict['data_dir'],
     auto_logging_checkpoint_dirs=True,
     sbatch_args=sbatch_args,
 )
 
-experiment = Experiment(experiment_args, [{'num_data': 100}])
+experiment = Experiment(experiment_args) 
 
-#experiment.add_variable('n_data', [100, 500, 1000, 2500, 5000, 10000, 50000, 100000])
+experiment.add_variable('num_data', [100, 250, 300, 500])
 
 experiment.run()

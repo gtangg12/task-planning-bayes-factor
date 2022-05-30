@@ -7,6 +7,7 @@ from experiments.experiment_utils import (
     list_of_dicts,
     check_keys_consistent,
     default_make_run_name,
+    append_sbatch_logs,
     make_args_command_sbatch,
     make_args_command
 )
@@ -16,7 +17,11 @@ SBATCH_TEMPLATE_PATH = os.path.dirname(__file__) + '/template.sh'
 
 
 class Experiment:
-    def __init__(self, args: ExperimentArguments, params_list: List[Dict] = None):
+    def __init__(
+        self, 
+        args: ExperimentArguments, 
+        params_list: List[Dict] = None
+    ):
         self.args = args
         self.setup_experiment(args)
         self.runs_params = list_of_dicts(args.n_trials)
@@ -27,7 +32,6 @@ class Experiment:
         """ Helper to initialize experiment based on args """
         if args.logging_dir:
             os.makedirs(self.args.logging_dir, exist_ok=True)
-            os.makedirs(self.args.logging_dir + '/slurm', exist_ok=True)
         if args.checkpoints_dir:
             os.makedirs(self.args.checkpoints_dir, exist_ok=True)
 
@@ -71,14 +75,6 @@ class Experiment:
             run_name = default_make_run_name(params, run_index)
         print(f'Running trial: {run_name}...')
 
-        # automatically generate slurm logs 
-        sbatch_args = copy.deepcopy(self.args.sbatch_args)
-        if self.args.logging_dir:
-            sbatch_args.extend([
-                f'job-name={run_name}',
-                f'output={self.args.logging_dir}/slurm/{run_name}.out',
-                f'error={self.args.logging_dir}/slurm/{run_name}.err',
-            ])
         # automatically generate experiment logs
         if self.args.data_dir:
             params['data_dir'] = self.args.data_dir
@@ -87,11 +83,17 @@ class Experiment:
         if self.args.checkpoints_dir:
             params['checkpoints_dir'] = self.args.checkpoints_dir + '/' + run_name
 
+        # automatically assign job name and generate slurm logs 
+        sbatch_args = copy.deepcopy(self.args.sbatch_args)
+        if self.args.logging_dir:
+            os.makedirs(params['logging_dir'])
+            sbatch_args = append_sbatch_logs(sbatch_args, run_name, params['logging_dir'])
+
         sbatch_command = make_args_command_sbatch(sbatch_args)
         params_command = make_args_command(params)
         command = f'sbatch {sbatch_command} {SBATCH_TEMPLATE_PATH} \
             {self.args.conda_env} {self.args.script} {params_command}'
-        print(command)
+        #print(command)
         os.system(command)
 
 
