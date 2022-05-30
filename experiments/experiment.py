@@ -86,14 +86,14 @@ class Experiment:
         # automatically assign job name and generate slurm logs 
         sbatch_args = copy.deepcopy(self.args.sbatch_args)
         if self.args.logging_dir:
-            os.makedirs(params['logging_dir'])
+            os.makedirs(params['logging_dir'], exist_ok=True)
             sbatch_args = append_sbatch_logs(sbatch_args, run_name, params['logging_dir'])
 
         sbatch_command = make_args_command_sbatch(sbatch_args)
         params_command = make_args_command(params)
         command = f'sbatch {sbatch_command} {SBATCH_TEMPLATE_PATH} \
             {self.args.conda_env} {self.args.script} {params_command}'
-        #print(command)
+        print(command)
         os.system(command)
 
 

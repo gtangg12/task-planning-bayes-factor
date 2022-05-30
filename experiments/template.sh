@@ -30,8 +30,6 @@ export HOROVOD_GPU_ALLGATHER=MPI
 export HOROVOD_GPU_BROADCAST=MPI
 export NCCL_DEBUG=DEBUG
 
-echo " Running on multiple nodes/GPU devices"
-echo ""
 echo " Run started at:- "
 date
 
