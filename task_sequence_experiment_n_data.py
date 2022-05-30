@@ -45,7 +45,7 @@ experiment_args = ExperimentArguments(
     name=args.name,
     script=experiment_dict['script'],
     conda_env='task_planning_babyai',
-    n_trials=4,
+    n_trials=10,
     data_dir=experiment_dict['data_dir'],
     auto_logging_checkpoint_dirs=True,
     sbatch_args=sbatch_args,
@@ -53,6 +53,6 @@ experiment_args = ExperimentArguments(
 
 experiment = Experiment(experiment_args) 
 
-experiment.add_variable('num_data', [100, 250, 300, 500])
+experiment.add_variable('num_data', [500, 750, 1000, 1500, 2500, 5000, 10000, 25000, 50000, 100000])
 
 experiment.run()

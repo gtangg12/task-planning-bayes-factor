@@ -170,12 +170,11 @@ class Trainer:
         return test_metrics
 
     def log(self, entry_name, epoch, metrics):
-        ''' Dumps metrics to json and logs to tensorboard. 
-        '''
+        ''' Dumps metrics to json and logs to tensorboard. '''
         logging_filename = f'{self.args.logging_dir}/metrics/{entry_name}_{epoch:03d}.json'
         with open(logging_filename, 'w') as f:
             json.dump(dict_to_serializable(metrics), f)
-
+            
         self.log_tensorboard(entry_name, epoch, metrics)
 
     def log_tensorboard(self, entry_name, epoch, metrics):

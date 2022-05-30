@@ -34,6 +34,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 os.makedirs(args.logging_dir, exist_ok=True)
+os.makedirs(args.logging_dir + '/metrics', exist_ok=True)
 os.makedirs(args.checkpoints_dir, exist_ok=True)
 
 
@@ -42,6 +43,9 @@ accuracy = load_metric('classification-accuracy')
 kl_divergence = load_metric('classification-kl_divergence')
 label_frequency = load_metric('classification-label_frequency')
 
+
+## TODO: modify transformers trainer so metrics are written as json when trainer.log is called in trainer.evaluate
+## TODO: train metrics (see metric_key_prefix)
 
 def compute_metrics(outputs):
     # transformers trainer returns outputs as numpy arrays
