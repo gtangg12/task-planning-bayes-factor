@@ -16,6 +16,8 @@ from datasets.load_data_utils import (
 )
 from datasets.text_classification_dataset import TextSequenceClassificationDataset
 from workflows import TransformersTrainer, TransformersTrainingArguments
+from workflows.trainer_utils import dict_to_serializable
+
 
 ''' Experiment params '''
 parser = argparse.ArgumentParser(
@@ -35,18 +37,27 @@ os.makedirs(args.checkpoints_dir, exist_ok=True)
 
 
 ''' Metrics '''
-classification_accuracy = load_metric('classification', 'accuracy')
-label_frequency = load_metric('classification', 'label_frequency')
+accuracy = load_metric('classification-accuracy')
+kl_divergence = load_metric('classification-kl_divergence')
+label_frequency = load_metric('classification-label_frequency')
+
 
 def compute_metrics(outputs):
+    # transformers trainer returns outputs as numpy arrays
     logits, labels = outputs
     logits, labels = torch.from_numpy(logits), torch.from_numpy(labels)
     _, preds = torch.max(logits, dim=1)
-    return {
-        'accuracy': classification_accuracy(preds, labels),
-        'preds_freq': label_frequency(preds),
-        'labels_freq': label_frequency(labels),
+
+    preds_freq, labels_freq = \
+        label_frequency(preds, NUM_ACTIONS), label_frequency(labels, NUM_ACTIONS)
+        
+    metrics = {
+        'accuracy': accuracy(preds, labels),
+        'preds_freq': preds_freq,
+        'labels_freq': labels_freq,
+        'kl_divergence': kl_divergence(preds_freq, labels_freq),
     }
+    return dict_to_serializable(metrics)
 
 
 ''' Tokenizer '''
@@ -54,13 +65,12 @@ tokenizer = AutoTokenizer.from_pretrained('gpt2', use_fast=True)
 tokenizer.pad_token = tokenizer.eos_token
 tokenize_fn = lambda text: tokenizer(text, padding='max_length', truncation=True)
 
-
-''' Loading Data '''
+''' Loading data '''
 NUM_CHUNKS_USED = 1
 inputs = load_from_dir(
     args.data_dir, 
     num_data=args.num_data,
-    filename_filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS_USED
+    filename_filter_fn=lambda f: chunknum_from_path(f) < NUM_CHUNKS_USED
 )
 texts, labels, tasknames = list(zip(*inputs))
 
@@ -83,8 +93,7 @@ model.config.pad_token_id = tokenizer.pad_token_id
 ''' Training '''
 training_args = TransformersTrainingArguments(
     output_dir=args.checkpoints_dir, 
-    logging_dir=args.logging_dir,
-    logging_strategy='epoch',
+    logging_strategy='no',
     evaluation_strategy='epoch', 
     save_strategy='epoch',
     gradient_accumulation_steps=4, 

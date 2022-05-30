@@ -1,9 +1,11 @@
+import os
 import json
 from typing import Any, List, Dict, Callable, Optional, NewType
 
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from metrics import Logits, Labels
@@ -12,13 +14,14 @@ from workflows.training_args import TrainingArguments
 from workflows.trainer_utils import (
     NUM_DEVICES_AVAILABLE,
     DEFAULT_DEVICE,
-    inputs_to_device,
+    dict_to_device,
+    dict_to_serializable,
 )
 
 Loss = float
 
 
-#TODO support start from epoch
+#TODO raytune
 
 
 class Trainer:
@@ -48,11 +51,13 @@ class Trainer:
         self.eval_dataloader = self.get_eval_dataloader(eval_dataset) if eval_dataset else None
 
         self.compute_metrics = compute_metrics
+        self.tb_writer = SummaryWriter(log_dir=self.args.logging_dir + '/tensorboard')
+        os.makedirs(self.args.logging_dir + '/metrics', exist_ok=True)
 
         self.criterion = criterion
         self.optimizer = optimizer
-        self.optimizer.zero_grad()
         self.scheduler = scheduler
+        self.optimizer.zero_grad()
 
     def get_train_dataloader(self, dataset):
         ''' Returns a new instance of DataLoader constructed from the training dataset.'''
@@ -92,7 +97,7 @@ class Trainer:
     def training_step(self, inputs, epoch):
         loss, logits = self.compute_loss(inputs, return_outputs=True)
         
-        if epoch % self.args.gradient_accumulation_epochs == 0:
+        if (epoch + 1) % self.args.gradient_accumulation_epochs == 0:
             loss.backward()
             self.optimizer.step()
             self.optimizer.zero_grad()
@@ -107,7 +112,7 @@ class Trainer:
             raise ValueError("Trainer: training requires a train_dataset.")
         if not self.optimizer:
             raise ValueError("Trainer: training requires an optimizer.")
-            
+        
         for epoch in range(self.args.num_train_epochs):
             print(f'Epoch-{epoch}')
 
@@ -115,7 +120,7 @@ class Trainer:
             logits, labels = [], []
             self.model.train()
             for step, inputs in enumerate(tqdm(self.train_dataloader)):
-                inputs_to_device(inputs, DEFAULT_DEVICE)
+                dict_to_device(inputs, DEFAULT_DEVICE)
                 loss, _logits = self.training_step(inputs, epoch)
                 train_loss += loss.item()
                 logits.append(_logits)
@@ -123,11 +128,6 @@ class Trainer:
             train_loss /= len(self.train_dataloader)
 
             train_metrics = {'train_loss': train_loss}
-            if self.compute_metrics:
-                train_metrics.update(
-                    self.compute_metrics((torch.cat(logits), torch.cat(labels)))
-                )
-
             eval_metrics = self.evaluate(self.eval_dataloader) if self.eval_dataloader else None
 
             if self.scheduler:
@@ -137,8 +137,8 @@ class Trainer:
                     self.scheduler.step()
 
             if self.args.logging_dir and (epoch + 1) % self.args.logging_epochs == 0:
-                self.log(f'train_{epoch:03d}', train_metrics)
-                self.log(f'eval_{epoch:03d}', eval_metrics)
+                self.log(f'train', epoch, train_metrics)
+                self.log(f'eval', epoch, eval_metrics)
 
             if self.args.save_dir and (epoch + 1) % self.args.save_epochs == 0:
                 self.save_checkpoint(epoch)
@@ -149,7 +149,7 @@ class Trainer:
         self.model.eval()
         with torch.no_grad():
             for step, inputs in enumerate(tqdm(loader)):
-                inputs_to_device(inputs, DEFAULT_DEVICE)
+                dict_to_device(inputs, DEFAULT_DEVICE)
                 loss, _logits = self.prediction_step(inputs)
                 eval_loss += loss.item()
                 logits.append(_logits)
@@ -168,14 +168,29 @@ class Trainer:
         test_metrics = self.evaluate(test_loader)
         return test_metrics
 
-    def log(self, entry_name, metrics):
-        logging_filename = f'{self.args.logging_dir}/{entry_name}_metrics.json'
+    def log(self, entry_name, epoch, metrics):
+        ''' Dumps metrics to json and logs to tensorboard. 
+        '''
+        logging_filename = f'{self.args.logging_dir}/metrics/{entry_name}_{epoch:03d}.json'
         with open(logging_filename, 'w') as f:
-            json.dump(metrics, f)
+            json.dump(dict_to_serializable(metrics), f)
+
+        self.log_tensorboard(entry_name, epoch, metrics)
+
+    def log_tensorboard(self, entry_name, epoch, metrics):
+        ''' Logs metrics to tensorboard. User can override default behavior, 
+            which is to log all scalars. 
+        '''
+        for key, value in metrics:
+            if isinstance(value, (int, float)):
+                self.tb_writer.add_scalar(f'{entry_name}/{key}', value, epoch)
+            else:
+                continue
+        self.tb_writer.flush()
 
     def save_checkpoint(self, epoch):
         checkpoint_filename = f'{self.args.save_dir}/{epoch:03d}_checkpoint.pt'
-        print(checkpoint_filename)
+        print(f'Saved checkpoint for epoch {epoch} at {checkpoint_filename}')
         torch.save({
             'model': self.model.state_dict(),
             'epoch': epoch,
@@ -183,4 +198,11 @@ class Trainer:
             'scheduler': self.scheduler.state_dict() if self.scheduler else None,
         }, checkpoint_filename)
 
-    # TODO load_checkpoint ?
+    def load_checkpoint(self, checkpoint_filename):
+        checkpoint = torch.load(checkpoint_filename)
+        self.model.load_state_dict(checkpoint['model'])
+        self.optimizer.load_state_dict(checkpoint['optimizer'])
+        if checkpoint['scheduler']:
+            self.scheduler.load_state_dict(checkpoint['scheduler'])
+        self.args.num_train_epochs -= checkpoint['epoch']
+        print(f'Loaded checkpoint {checkpoint_filename}')

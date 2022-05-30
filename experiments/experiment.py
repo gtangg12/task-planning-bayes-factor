@@ -1,85 +1,97 @@
 import os
-from os.path import join
-from typing import Dict
+import copy
+from typing import Dict, List
 
-from experiment_args import ExperimentArgs
-
-
-# absolute directory of work ecosystem
-BASE_DIR = '/nobackup/users/gtangg12/task_planning_bayes_factor'
-
-# respective absolute directories for each module
-DATA_DIR = join(BASE_DIR, 'data')
-SLURM_DIR = join(BASE_DIR, 'slurm')
-CHECKPOINTS_DIR = join(BASE_DIR, 'checkpoints')
-EXPERIMENTS_DIR = join(BASE_DIR, 'experiments')
+from experiments.experiment_args import ExperimentArguments
+from experiments.experiment_utils import (
+    list_of_dicts,
+    check_keys_consistent,
+    default_make_run_name,
+    make_args_command_sbatch,
+    make_args_command
+)
 
 
-def wrap_quotes(str: str):
-    return f'"{str}"'
-
-
-def make_args(args: Dict) -> str:
-    """ Helper function to make a string of command line arguments from args dict """
-    cmd = []
-    for key, value in args.items():
-        cmd.append(f'--{key} {value}')
-    # wrap in quotes for bash script to pass args as string to python script
-    return wrap_quotes(' '.join(cmd))
+SBATCH_TEMPLATE_PATH = os.path.dirname(__file__) + '/template.sh'
 
 
 class Experiment:
-    def __init__(self, experiment_name: str, dataset: str, slurm_spec: str, args: ExperimentArgs) -> None:
-        self.experiment_name = experiment_name
+    def __init__(self, args: ExperimentArguments, params_list: List[Dict] = None):
         self.args = args
+        self.setup_experiment(args)
+        self.runs_params = list_of_dicts(args.n_trials)
+        if params_list:
+            self.add_from_params_list(params_list)
 
-        self.data_dir = join(DATA_DIR, dataset)
-        self.slurm_spec_path = join(SLURM_DIR, slurm_spec)
-        self.logging_base_dir = join(EXPERIMENTS_DIR, experiment_name)
-        self.checkpoints_base_dir = join(CHECKPOINTS_DIR, experiment_name)
+    def setup_experiment(self, args):
+        """ Helper to initialize experiment based on args """
+        if args.logging_dir:
+            os.makedirs(self.args.logging_dir, exist_ok=True)
+            os.makedirs(self.args.logging_dir + '/slurm', exist_ok=True)
+        if args.checkpoints_dir:
+            os.makedirs(self.args.checkpoints_dir, exist_ok=True)
 
-        # Flag for whether experiment has been setup
-        self.setup = False
+    def add_variable(self, name, values):
+        """ Add a variable parameter to the experiment. """
+        if len(values) != self.args.n_trials:
+            raise ValueError(f'Number of values must match number of trials: {self.args.n_trials}')
+        for i, param in enumerate(self.runs_params):
+            param[name] = values[i]
 
-    def setup_run(self, run_name: str) -> None:
-        """ Update internal experiment state, including setting up logging and 
-            checkpoint directories 
-        """
-        self.run_name = run_name
-        self.logging_dir = join(self.logging_base_dir, run_name)
-        self.checkpoints_dir = join(self.checkpoints_base_dir, run_name)
-        self.setup = True
+    def add_constant(self, name, value):
+        """ Add a constant parameter to the experiment. """
+        for param in self.runs_params:
+            param[name] = value
 
-    def run(self, params: Dict) -> None:
-        """ Run experiment with given parameters """
-        assert self.setup, 'Must setup run first.'
+    def add_from_params_list(self, params_list: List[Dict]) -> None:
+        """ Initialize experiment from a list of variable parameter dictionaries """
+        if len(params_list) != self.args.n_trials:
+            raise ValueError(f'Number of params must match number of trials: {self.args.n_trials}')
+        if not check_keys_consistent(params_list):
+            raise ValueError('All params must have the same keys')
 
-        # slurm cannot write to nonexistent directory
-        os.makedirs(self.logging_dir, exist_ok=True)
+        keys = params_list[0].keys()
+        collated = {}
+        for key in keys:
+            collated[key] = [elm[key] for elm in params_list]
+        for key, values in collated.items():
+            self.add_variable(key, values)
+            
+    def run(self) -> None:
+        """ Run all experiment trials specified in self.runs_params """
+        print(f'Running experiment {self.args.name}...')
+        for i, params in enumerate(self.runs_params):
+            self.run_trial(params, i)
+    
+    def run_trial(self, params, run_index) -> None:
+        """ Run experiment trial with given parameters """
+        if 'name' in params:
+            run_name = params.pop('name')
+        else:
+            run_name = default_make_run_name(params, run_index)
+        print(f'Running trial: {run_name}...')
 
-        # build and run sbatch command
-        sbatch_cmd = self._make_sbatch()
-        params_cmd = make_args(params)
-        cmd = f'sbatch {sbatch_cmd} {params_cmd}'
-        os.system(cmd)
-        
-        # clear experiment state to avoid overlap run states
-        self._clear()
+        # automatically generate slurm logs 
+        sbatch_args = copy.deepcopy(self.args.sbatch_args)
+        if self.args.logging_dir:
+            sbatch_args.extend([
+                f'job-name={run_name}',
+                f'output={self.args.logging_dir}/slurm/{run_name}.out',
+                f'error={self.args.logging_dir}/slurm/{run_name}.err',
+            ])
+        # automatically generate experiment logs
+        if self.args.data_dir:
+            params['data_dir'] = self.args.data_dir
+        if self.args.logging_dir:
+            params['logging_dir'] = self.args.logging_dir + '/' + run_name
+        if self.args.checkpoints_dir:
+            params['checkpoints_dir'] = self.args.checkpoints_dir + '/' + run_name
 
-    def _make_sbatch(self) -> str:
-        """ Make sbatch command for slurm based on slurm arguments provided in args """
-        sbatch_args = [
-            f'-J {self.run_name}',
-            f'-o {self.logging_dir}/run.out',
-            f'-e {self.logging_dir}/run.err',
-            self.slurm_spec_path,
-        ]
-        for key, value in self.args.__dict__.items():
-            sbatch_args.append(f'--{key}={value}')
-        return ' '.join(sbatch_args)
+        sbatch_command = make_args_command_sbatch(sbatch_args)
+        params_command = make_args_command(params)
+        command = f'sbatch {sbatch_command} {SBATCH_TEMPLATE_PATH} \
+            {self.args.conda_env} {self.args.script} {params_command}'
+        print(command)
+        os.system(command)
 
-    def _clear(self) -> None:
-        """ Clear experiment state to prevent run from being reran or variables reused """
-        self.setup = False
-        self.logging_dir = None
-        self.checkpoints_dir = None
+

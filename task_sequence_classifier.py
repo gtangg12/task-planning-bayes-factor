@@ -12,7 +12,7 @@ class ResidualBLockFilm(nn.Module):
         self.conv = nn.Conv2d(dim, dim, 3, padding=1);
         self.body = nn.Sequential(
             nn.Conv2d(dim, dim, 3, padding=1),
-            nn.BatchNorm2d(dim)
+            nn.BatchNorm2d(dim),
         )
 
     def forward(self, input, gamma, beta):

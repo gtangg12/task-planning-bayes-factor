@@ -1,5 +1,5 @@
-from transformers import Trainer as TransformersTrainer
-from transformers import TrainingArguments as TransformersTrainingArguments
-
 from workflows.trainer import Trainer
 from workflows.training_args import TrainingArguments
+
+from transformers import Trainer as TransformerTrainer
+from transformers import TrainingArguments as TransformerTrainingArguments
