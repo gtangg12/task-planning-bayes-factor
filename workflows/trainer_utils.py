@@ -11,6 +11,7 @@ def dict_to_device(inputs: Dict, device: torch.device) -> None:
     for key, value in inputs.items():
         if isinstance(value, torch.Tensor):
             inputs[key] = value.to(device)
+    return inputs
 
 
 def dict_to_serializable(inputs):
@@ -18,3 +19,4 @@ def dict_to_serializable(inputs):
     for key, value in inputs.items():
         if isinstance(value, torch.Tensor):
             inputs[key] = value.tolist()
+    return inputs

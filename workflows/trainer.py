@@ -149,7 +149,7 @@ class Trainer:
         self.model.eval()
         with torch.no_grad():
             for step, inputs in enumerate(tqdm(loader)):
-                dict_to_device(inputs, DEFAULT_DEVICE)
+                inputs = dict_to_device(inputs, DEFAULT_DEVICE)
                 loss, _logits = self.prediction_step(inputs)
                 eval_loss += loss.item()
                 logits.append(_logits)

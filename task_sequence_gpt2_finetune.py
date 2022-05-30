@@ -50,7 +50,7 @@ def compute_metrics(outputs):
 
     preds_freq, labels_freq = \
         label_frequency(preds, NUM_ACTIONS), label_frequency(labels, NUM_ACTIONS)
-        
+
     metrics = {
         'accuracy': accuracy(preds, labels),
         'preds_freq': preds_freq,
