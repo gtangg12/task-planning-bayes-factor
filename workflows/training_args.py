@@ -46,3 +46,7 @@ class TrainingArguments:
     save_epochs: int = field(
         default=1, metadata={'help': 'Save model checkpoint every X epochs.'}
     )
+    
+    include_inputs_for_metrics: bool = field(
+        default=False, metadata={'help': 'Include inputs in metrics.'}
+    )

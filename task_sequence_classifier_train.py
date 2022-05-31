@@ -63,6 +63,7 @@ def compute_metrics(outputs):
     }
     return dict_to_serializable(metrics)
 
+
 ''' Loading Data '''
 NUM_CHUNKS = 1
 
@@ -72,9 +73,7 @@ sequences = load_from_dir(
     load_fn=load_sequences,
     filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS and taskname_from_path(filename) == 'GoToLocal' 
 )
-print(len(sequences))
 
-exit()
 
 ''' Datasets '''
 babyai_sequence_dataset = BabyaiSequenceDataset(sequences)
@@ -90,6 +89,7 @@ model = ClassifierFilmRNN(
     action_embedding_dim=babyai_sequence_dataset.EMBEDDING_DIM
 )
 
+
 ''' Training '''
 training_args = TrainingArguments(
     logging_dir=args.logging_dir,
@@ -98,6 +98,7 @@ training_args = TrainingArguments(
     num_train_epochs=100,
     per_device_train_batch_size=32,
     per_device_eval_batch_size=32,
+    include_inputs_for_metrics=True,
 )
 
 optimizer=torch.optim.Adam(model.parameters(), lr=0.001)
@@ -109,6 +110,7 @@ def loss_fn(logits, labels):
     labels = labels.float()
     return bce_loss(logits, labels)
 
+exit()
 trainer = Trainer(
     model=model,
     args=training_args,

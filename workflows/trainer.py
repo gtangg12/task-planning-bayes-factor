@@ -159,8 +159,11 @@ class Trainer:
         
         metrics = {'eval_loss': eval_loss}
         if self.compute_metrics:
-           metrics.update(
-               self.compute_metrics((torch.cat(logits), torch.cat(labels)))
+            outputs = (torch.cat(logits), torch.cat(labels))
+            if self.args.include_inputs_for_metrics:
+                outputs = (*outputs, inputs)
+            metrics.update(
+                self.compute_metrics(outputs)
             )
         return metrics
 
