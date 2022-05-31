@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from metrics import Logits, Labels
+from metrics import Loss, Logits, Labels
 from datasets.collate_utils import DataCollatorFunc
 from workflows.training_args import TrainingArguments
 from workflows.trainer_utils import (
@@ -19,10 +19,8 @@ from workflows.trainer_utils import (
     dict_to_serializable,
 )
 
-Loss = float
 
-
-#TODO raytune
+#TODO hyperparam search w/ raytune
 
 
 class Trainer:
@@ -39,7 +37,7 @@ class Trainer:
         scheduler: Optional[torch.optim.lr_scheduler._LRScheduler] = None
     ):
         self.model = model
-        # use all gpus available
+        # use all gpus allocated to job
         model = nn.DataParallel(model).to(DEFAULT_DEVICE)
         model.to(DEFAULT_DEVICE)
         

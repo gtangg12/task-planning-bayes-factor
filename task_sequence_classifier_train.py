@@ -91,6 +91,16 @@ model = ClassifierFilmRNN(
 
 
 ''' Training '''
+optimizer=torch.optim.Adam(model.parameters(), lr=0.001)
+scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
+bce_loss = nn.BCELoss()
+
+def loss_fn(logits, labels):
+    labels = torch.unsqueeze(labels, dim=1)
+    labels = labels.float()
+    return bce_loss(logits, labels)
+
+
 training_args = TrainingArguments(
     logging_dir=args.logging_dir,
     save_dir=args.checkpoints_dir, 
@@ -101,16 +111,6 @@ training_args = TrainingArguments(
     include_inputs_for_metrics=True,
 )
 
-optimizer=torch.optim.Adam(model.parameters(), lr=0.001)
-scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
-bce_loss = nn.BCELoss()
-
-def loss_fn(logits, labels):
-    labels = torch.unsqueeze(labels, dim=1)
-    labels = labels.float()
-    return bce_loss(logits, labels)
-
-exit()
 trainer = Trainer(
     model=model,
     args=training_args,

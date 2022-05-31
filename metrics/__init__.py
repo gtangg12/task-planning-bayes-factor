@@ -11,7 +11,7 @@ from metrics.classification_metrics import (
 )
 
 
-Logits, Labels = torch.Tensor, torch.Tensor
+Loss, Logits, Labels = float, torch.Tensor, torch.Tensor
 
 
 CLASSIFICATION_METRICS = {
