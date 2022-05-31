@@ -47,9 +47,7 @@ label_frequency = load_metric('classification-label_frequency')
 
 
 def compute_metrics(outputs):
-    # transformers trainer returns outputs as numpy arrays
-    logits, labels = outputs
-    logits, labels = torch.from_numpy(logits), torch.from_numpy(labels)
+    logits, labels, _ = outputs
     _, preds = torch.max(logits, dim=1)
 
     preds_freq, labels_freq = \

@@ -128,6 +128,7 @@ class Trainer:
 
             train_metrics = {'train_loss': train_loss}
             eval_metrics = self.evaluate(self.eval_dataloader) if self.eval_dataloader else None
+            print('Train/eval metrics:', train_metrics, eval_metrics)
 
             if self.scheduler:
                 if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -137,7 +138,7 @@ class Trainer:
 
             if self.args.logging_dir and (epoch + 1) % self.args.logging_epochs == 0:
                 self.log(f'train', epoch, train_metrics)
-                self.log(f'eval', epoch, eval_metrics)
+                self.log(f'eval', epoch, eval_metrics, dump_metrics=True)
 
             if self.args.save_dir and (epoch + 1) % self.args.save_epochs == 0:
                 self.save_checkpoint(epoch)
@@ -170,11 +171,12 @@ class Trainer:
         test_metrics = self.evaluate(test_loader)
         return test_metrics
 
-    def log(self, entry_name, epoch, metrics):
-        ''' Dumps metrics to json and logs to tensorboard. '''
-        logging_filename = f'{self.args.logging_dir}/metrics/{entry_name}_{epoch:03d}.json'
-        with open(logging_filename, 'w') as f:
-            json.dump(dict_to_serializable(metrics), f)
+    def log(self, entry_name, epoch, metrics, dump_metrics=False):
+        ''' Logs metrics to tensorboard and dumps as json if dump_metrics. '''
+        if dump_metrics:
+            logging_filename = f'{self.args.logging_dir}/metrics/{entry_name}_{epoch:03d}.json'
+            with open(logging_filename, 'w') as f:
+                json.dump(dict_to_serializable(metrics), f)
             
         self.log_tensorboard(entry_name, epoch, metrics)
 
@@ -182,11 +184,11 @@ class Trainer:
         ''' Logs metrics to tensorboard. User can override default behavior, 
             which is to log all scalars. 
         '''
-        for key, value in metrics:
+        for key, value in metrics.items():
             if isinstance(value, (int, float)):
                 self.tb_writer.add_scalar(f'{entry_name}/{key}', value, epoch)
             else:
-                logging.warning(f'Attempted to log non-scalar value {key} to tensorboard, so we dropped attribute.')
+                print(f'Trainer attempted to log non-scalar value {key} to tensorboard, so we dropped attribute.')
         self.tb_writer.flush()
 
     def save_checkpoint(self, epoch):
