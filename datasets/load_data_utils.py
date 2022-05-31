@@ -9,8 +9,8 @@ def load_from_dir(
     path, 
     num_data=None, 
     shuffle=True, 
-    filename_load_fn=None, 
-    filename_filter_fn=None, 
+    load_fn=None, 
+    filter_fn=None, 
     verbose=True
 ):
     """ Helper function to load data from dataset directory
@@ -19,27 +19,30 @@ def load_from_dir(
         path: path to dataset directory
         num_data: number of data to load (default: None -> load all data)
         shuffle: whether to shuffle the data
-        filename_load_fn: function to load data from file (default: None -> load with pickle)
-        filename_filter_fn: function to filter by filenames (default: None -> load all files)
+        load_fn: function to load data from file (default: None -> load with pickle)
+        filter_fn: function to filter by filenames (default: None -> load all files)
         verbose: whether to print progress bar and other status indicators
         
     Returns:
         inputs: list of tuples of corresponding data
     """
     filenames = glob.glob(path + '/*.pkl')
-    if filename_filter_fn:
-        filenames = list(filter(filename_filter_fn, filenames))
+    if filter_fn:
+        filenames = list(filter(filter_fn, filenames))
     if verbose:
         filenames = tqdm(filenames)
         
     inputs = []
     for filename in filenames:
-        if filename_load_fn:
-            _inputs = filename_load_fn(filename)
+        if load_fn:
+            _inputs = load_fn(filename)
         else:
             with open(filename, 'rb') as f:
                 _inputs = pickle.load(f)
-        inputs.extend(_inputs)
+        if isinstance(_inputs, list):
+            inputs.extend(_inputs)
+        else:
+            inputs.append(_inputs)
 
     if shuffle:
         random.shuffle(inputs)

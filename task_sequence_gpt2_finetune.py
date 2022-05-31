@@ -75,7 +75,7 @@ NUM_CHUNKS_USED = 1
 inputs = load_from_dir(
     args.data_dir, 
     num_data=args.num_data,
-    filename_filter_fn=lambda f: chunknum_from_path(f) < NUM_CHUNKS_USED
+    filter_fn=lambda filename: chunknum_from_path(filename) < NUM_CHUNKS_USED
 )
 texts, labels, tasknames = list(zip(*inputs))
 

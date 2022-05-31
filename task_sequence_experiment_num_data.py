@@ -8,11 +8,11 @@ from experiments import (
 
 
 experiments = {
-    'babyai_gpt2_finetune_n_data': {
+    'babyai_gpt2_finetune_num_data': {
         'script'  : 'task_sequence_gpt2_finetune.py',
         'data_dir': 'data/babyai/env_description_chunked',
     },
-    'babyai_classifier_train_n_data': {
+    'babyai_classifier_train_num_data': {
         'script'  : 'task_sequence_classifier_train.py',
         'data_dir': 'data/babyai/task_sequence_chunked',
     },

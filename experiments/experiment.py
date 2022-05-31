@@ -96,7 +96,7 @@ class Experiment:
         sbatch_args = copy.deepcopy(self.sbatch_args)
         sbatch_args.extend([
             'quiet', # don't print slurm output to sdout
-            f'job-name={run_name}',
+            f'job-name={self.args.name}-{run_name}', # unique name for slurm queue
             f'output={logging_subdir}/slurm.out',
             f'error={logging_subdir}/slurm.err',
         ])
@@ -111,10 +111,13 @@ class Experiment:
         os.system(command)
 
     def list_active_runs(self) -> List[str]:
-        ''' Get list of active job names '''
-        run_names_log = os.popen('squeue -u $USER -o %j').read() 
+        ''' Get list of active job names of current experiment'''
+        run_names = os.popen('squeue -u $USER -o %j').read() 
         # index zero contains 'NAMES' and last index empty string
-        return run_names_log.split('\n')[1:-1]
+        run_names = run_names.split('\n')[1:-1]
+        # filter current experiment jobs
+        run_names = list(filter(lambda x: x.startswith(f'{self.args.name}-'), run_names))
+        return run_names
     
     def run_scheduled(self) -> None:
         ''' Run experiment with at most max_concurrent_runs at a time '''
@@ -133,7 +136,7 @@ class Experiment:
             if num_completed == num_total:
                 break
             # interval in seconds between checking for available resources 
-            time.sleep(2)
+            time.sleep(30)
         
     def run_all(self) -> None:
         ''' Run all trials in the experiment. If resource limit exceeded, queue the remaining runs. '''
