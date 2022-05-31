@@ -16,7 +16,7 @@ from experiments.experiment_utils import (
 
 SBATCH_TEMPLATE_PATH = os.path.dirname(__file__) + '/template.sh'
 SBATCH_LOGGING_PREFIXES = ['job_name==', 'output==', 'error==']
-
+SBATCH_MAX_CONCURRENT_RUNS = 4
 
 logger = logging.getLogger(__name__)
 
@@ -29,17 +29,33 @@ class Experiment:
         params_list: List[Dict] = None,
         max_concurrent_runs: int = None,
     ):
-        if max_concurrent_runs and not (max_concurrent_runs > 0):
-            raise ValueError(f'{max_concurrent_runs} must be > 0')
-        self.sbatch_args = sbatch_args
+        ## TODO: fix the max_concurrent_runs mess (move to experiment_args?)
+        '''
+        max_concurrent_runs:
+            Maximum number of jobs to run concurrently with name args.name. 
+            
+            This creates the option of having more jobs run if max_concurrent_runs decreases between
+            experiments of the same name.
+
+            It's possible that there may not be enough resources to run all max_concurrent_runs jobs,
+            in which case the remaining (max_concurrent_runs - number of launched runs) will be queued.
+            
+            <Tip> be careful when max_concurrent_runs over all experiments >= SBAGHT_MAX_CONCURRENT_RUNS
+        '''
+        if max_concurrent_runs:
+            if max_concurrent_runs <= 0:
+                raise ValueError(f'{max_concurrent_runs} must be > 0')
+            if max_concurrent_runs > SBATCH_MAX_CONCURRENT_RUNS:
+                raise ValueError(f'{max_concurrent_runs} must be <= {SBATCH_MAX_CONCURRENT_RUNS}')
         self.max_concurrent_runs = max_concurrent_runs
 
         # sbatch args should not provide logging if logging_dir is already provided
         for arg in sbatch_args:
             if any([arg.startswith(x) for x in SBATCH_LOGGING_PREFIXES]):
                 logger.warning(f'slurm argument {arg} will be overriden by args.logging_dir')
-        self.args = args
+        self.sbatch_args = sbatch_args
         
+        self.args = args
         # setup logging/checkpoint dirs if provided
         os.makedirs(self.args.logging_dir, exist_ok=True)
         if args.checkpoints_dir:

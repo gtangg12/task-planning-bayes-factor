@@ -36,9 +36,10 @@ sbatch_args = [
     'nodes=1',
     'ntasks-per-node=1',
     'cpus-per-task=2',
-    'gres=gpu:1',
+    'gres=gpu:2',
     'mem=256G',
     'time=24:00:00',
+    'exclude=node0008' 
 ]
 
 experiment_args = ExperimentArguments(
@@ -53,7 +54,7 @@ experiment_args = ExperimentArguments(
 experiment = Experiment(
     args=experiment_args,
     sbatch_args=sbatch_args,
-    max_concurrent_runs=3,
+    max_concurrent_runs=2,
 ) 
 
 experiment.add_variable('num_data', [500, 750, 1000, 1500, 2500, 5000, 10000, 25000, 50000, 100000])
