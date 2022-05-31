@@ -6,7 +6,6 @@ import torch
 from metrics.classification_metrics import (
     accuracy,
     label_frequency,
-    label_frequency_norm,
     kl_divergence,
     kl_divergence_symmetric,
 )
@@ -18,7 +17,6 @@ Logits, Labels = torch.Tensor, torch.Tensor
 CLASSIFICATION_METRICS = {
     'accuracy': accuracy,
     'label_frequency': label_frequency,
-    'label_frequency_norm': label_frequency_norm,
     'kl_divergence': kl_divergence,
     'kl_divergence_symmetric': kl_divergence_symmetric,
 }

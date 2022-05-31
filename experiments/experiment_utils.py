@@ -2,14 +2,14 @@ from typing import Dict, List, Set
 
 
 def list_of_dicts(n: int) -> List[Dict]:
-    """ Helper function to make a list of n empty dicts """
+    ''' Helper function to make a list of n empty dicts '''
     return [{} for _ in range(n)]
 
 
 def check_keys_consistent(params_list: List[Dict]) -> bool:
-    """ Helper function to check if all params have the same keys. 
+    ''' Helper function to check if all params have the same keys. 
         Assumes params_list has nonzero length. 
-    """
+    '''
     keys = params_list[0].keys()
     for params in params_list:
         if params.keys() != keys:
@@ -18,7 +18,7 @@ def check_keys_consistent(params_list: List[Dict]) -> bool:
 
 
 def default_make_run_name(run_params: Dict, run_index: int) -> str:
-    """ Helper function to make a run name from run param dict """
+    ''' Helper function to make a run name from run param dict '''
     if len(run_params) == 0:
         return f'run{run_index}'
     name = []
@@ -27,18 +27,8 @@ def default_make_run_name(run_params: Dict, run_index: int) -> str:
     return '_'.join(name)
 
 
-def append_sbatch_logs(sbatch_args: List, run_name: str, logging_dir: str) -> List:
-    """ Helper function to add slurm log files to sbatch_args """
-    sbatch_args.extend([
-        f'job-name={run_name}',
-        f'output={logging_dir}/slurm.out',
-        f'error={logging_dir}/slurm.err',
-    ])
-    return sbatch_args
-
-
 def make_args_command_sbatch(args: List) -> str:
-    """ Helper function to make a string of sbatch arguments from args dict """
+    ''' Helper function to make a string of sbatch arguments from args dict '''
     cmd = []
     for value in args:
         cmd.append(f'--{value}')
@@ -46,7 +36,7 @@ def make_args_command_sbatch(args: List) -> str:
 
 
 def make_args_command(args: Dict) -> str:
-    """ Helper function to make a string of command line arguments from args dict """
+    ''' Helper function to make a string of command line arguments from args dict '''
     cmd = []
     for key, value in args.items():
         cmd.append(f'--{key} {value}')

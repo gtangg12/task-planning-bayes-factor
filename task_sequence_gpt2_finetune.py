@@ -1,11 +1,9 @@
-import logging
 import os
 import argparse
 
 import torch
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
-
 
 from babyai.common import *
 from babyai_task_sequence import chunknum_from_path
@@ -38,14 +36,16 @@ os.makedirs(args.logging_dir + '/metrics', exist_ok=True)
 os.makedirs(args.checkpoints_dir, exist_ok=True)
 
 
+## TODO: modify transformers trainer so metrics are written as json when trainer.log is called in trainer.evaluate
+## TODO: train metrics (see metric_key_prefix)
+## TODO: compute separate states divs for each task based on inputs(recursive compute_metrics)
+##      include_inputs_for_metrics=True (currently satori doesnt have package to support, wait until 4.19 transformers available)
+
 ''' Metrics '''
 accuracy = load_metric('classification-accuracy')
 kl_divergence = load_metric('classification-kl_divergence')
 label_frequency = load_metric('classification-label_frequency')
 
-
-## TODO: modify transformers trainer so metrics are written as json when trainer.log is called in trainer.evaluate
-## TODO: train metrics (see metric_key_prefix)
 
 def compute_metrics(outputs):
     # transformers trainer returns outputs as numpy arrays
@@ -105,7 +105,7 @@ training_args = TransformersTrainingArguments(
     gradient_accumulation_steps=4, 
     num_train_epochs=5,
     per_device_train_batch_size=4,
-    per_device_eval_batch_size=4,
+    per_device_eval_batch_size=4
 )
 
 trainer = TransformersTrainer(
