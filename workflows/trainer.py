@@ -9,8 +9,6 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
-from metrics import Loss, Logits, Labels
-from datasets.collate_utils import DataCollatorFunc
 from workflows.training_args import TrainingArguments
 from workflows.trainer_utils import (
     NUM_DEVICES_AVAILABLE,
@@ -19,6 +17,9 @@ from workflows.trainer_utils import (
     dict_to_serializable,
 )
 
+
+DataCollatorFunc = Callable[[List[Any]], Dict]
+Loss, Logits, Labels = float, torch.Tensor, torch.Tensor
 
 #TODO hyperparam search w/ raytune
 
