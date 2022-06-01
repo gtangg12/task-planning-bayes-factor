@@ -38,15 +38,11 @@ class ExperimentArguments:
     )
 
     def __post_init__(self):
-        if not (self.num_trials > 0):
+        if self.num_trials <= 0:
             raise ValueError('Number of trials must be greater than 0')
         
         if self.auto_logging_checkpoint_dirs:
             if self.logging_dir or self.checkpoints_dir:
-                logger.warning('auto logging/checkpoint directories will overwrite provided logging_dir/checkpoints_dir')
+                logger.warning('Auto logging/checkpoint directories will overwrite provided logging_dir/checkpoints_dir')
             self.logging_dir = 'logs/' + self.name
-            self.checkpoints_dir = 'checkpoints/' + self.name
-
-        elif not self.logging_dir:
-            raise ValueError('Must provide logging_dir if auto_logging_checkpoint_dirs is False')
-            
+            self.checkpoints_dir = 'checkpoints/' + self.name    
