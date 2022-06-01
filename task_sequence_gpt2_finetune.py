@@ -14,7 +14,11 @@ from datasets.load_data_utils import (
     compute_train_eval_split
 )
 from datasets.text_classification_dataset import TextSequenceClassificationDataset
-from workflows import TransformersTrainer, TransformersTrainingArguments
+from workflows import (
+    TransformersTrainer, 
+    TransformersLoggingCallback,
+    TransformersTrainingArguments
+)
 from workflows.trainer_utils import dict_to_serializable
 
 
@@ -32,7 +36,6 @@ parser.add_argument(
 args = parser.parse_args()
 
 os.makedirs(args.logging_dir, exist_ok=True)
-os.makedirs(args.logging_dir + '/metrics', exist_ok=True)
 os.makedirs(args.checkpoints_dir, exist_ok=True)
 
 
@@ -96,6 +99,12 @@ model.config.pad_token_id = tokenizer.pad_token_id
 
 
 ''' Training '''
+logging_callback = TransformersLoggingCallback(
+    logging_dir=args.logging_dir + '/metrics',
+    entries_to_log=['eval'],
+    metrics_to_log=['loss', 'accuracy', 'preds_freq', 'labels_freq', 'kl_divergence'],
+)
+
 training_args = TransformersTrainingArguments(
     output_dir=args.checkpoints_dir, 
     evaluation_strategy='epoch', 
@@ -114,6 +123,7 @@ trainer = TransformersTrainer(
     train_dataset=train_dataset,
     eval_dataset=eval_dataset,
     compute_metrics=compute_metrics,
+    callbacks=[logging_callback]
 )
 
 trainer.train()

@@ -157,7 +157,7 @@ class Trainer:
                 labels.append(inputs['label'])
         eval_loss /= len(self.eval_dataloader)
         
-        metrics = {'eval_loss': eval_loss}
+        metrics = {'loss': eval_loss}
         if self.compute_metrics:
             outputs = (torch.cat(logits), torch.cat(labels))
             if self.args.include_inputs_for_metrics:
