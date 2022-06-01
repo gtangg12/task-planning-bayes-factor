@@ -15,5 +15,3 @@ def default_make_log_filename(logging_dir: str) -> str:
     current_time_str = get_current_time_str()
     logging_filename = f'{logging_dir}/{current_time_str}.log'
     return logging_filename
-
-
