@@ -4,6 +4,8 @@ from typing import List, Dict, Callable, Iterable
 
 
 SLURM_LOGGING_KEYS = ['--job_name=', '--output=', '--error=', '-J', '-o', '-e']
+SLURM_TEMPLATE_PATH = os.path.dirname(__file__) + '/template.sh'
+SLURM_MAX_CONCURRENT_RUNS = 4
 
 
 def list_active_run_names(filter_fn: Callable[[str], bool] = None) -> List[str]:
