@@ -89,8 +89,8 @@ model = ClassifierFilmRNN(
 
 
 ''' Training '''
-optimizer=torch.optim.Adam(model.parameters(), lr=0.001)
-scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 bce_loss = nn.BCELoss()
 
 def loss_fn(logits, labels):
@@ -117,8 +117,8 @@ trainer = Trainer(
     eval_dataset=eval_dataset,
     compute_metrics=compute_metrics,
     criterion=loss_fn,
-    optimizer=torch.optim.Adam(model.parameters(), lr=5e-5),
-    scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min'),
+    optimizer=optimizer,
+    scheduler=scheduler,
 )
 
-trainer.train()
+#trainer.train()
