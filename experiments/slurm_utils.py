@@ -1,11 +1,5 @@
 import os
-import time
-from typing import List, Dict, Callable, Iterable
-
-
-SLURM_LOGGING_KEYS = ['--job_name=', '--output=', '--error=', '-J', '-o', '-e']
-SLURM_TEMPLATE_PATH = os.path.dirname(__file__) + '/template.sh'
-SLURM_MAX_CONCURRENT_RUNS = 4
+from typing import List, Dict, Callable
 
 
 def list_active_run_names(filter_fn: Callable[[str], bool] = None) -> List[str]:
@@ -19,7 +13,7 @@ def list_active_run_names(filter_fn: Callable[[str], bool] = None) -> List[str]:
     return run_names
 
 
-def slurm_args_list_to_dict(args_list: List[str]) -> Dict[str, str]:
+def params_slurm_list_to_dict(args_list: List[str]) -> Dict[str, str]:
     ''' Convert a list of slurm args to a dict. Arguments with no value are
         mapped to None.
     '''
