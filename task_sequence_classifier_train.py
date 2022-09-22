@@ -121,4 +121,4 @@ trainer = Trainer(
     scheduler=scheduler,
 )
 
-#trainer.train()
+trainer.train()

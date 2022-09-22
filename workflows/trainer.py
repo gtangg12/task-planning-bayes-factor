@@ -133,7 +133,7 @@ class Trainer:
 
             if self.scheduler:
                 if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
-                    self.scheduler.step(eval_metrics['eval_loss'])
+                    self.scheduler.step(eval_metrics['loss'])
                 else:
                     self.scheduler.step()
 
