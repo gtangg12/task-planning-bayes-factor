@@ -1,10 +1,6 @@
 import argparse 
 
-from experiments import (
-    Experiment,
-    ExperimentArguments,
-    experiment,
-)
+from experiments import Experiment, ExperimentArguments
 
 
 experiments = {
@@ -18,6 +14,9 @@ experiments = {
     },
 }
 
+NUM_TRIALS = 10
+NUM_DATA_VAR = [100, 500, 750, 1000, 1500, 2500, 5000, 10000, 15000, 25000]
+
 
 parser = argparse.ArgumentParser(
     description='Select task sequence num data experiment')
@@ -30,33 +29,32 @@ if args.name not in experiments:
 experiment_dict = experiments[args.name]
 
 
-sbatch_args = [
-    'mail-user=gtangg12@mit.edu',
-    'mail-type=NONE',
-    'nodes=1',
-    'ntasks-per-node=1',
-    'cpus-per-task=2',
-    'gres=gpu:2',
-    'mem=256G',
-    'time=24:00:00',
-    'exclude=node0008' 
+params_slurm = [
+    '--mail-user=gtangg12@mit.edu',
+    '--mail-type=NONE',
+    '--nodes=1',
+    '--ntasks-per-node=1',
+    '--cpus-per-task=2',
+    '--gres=gpu:2',
+    '--mem=256G',
+    '--time=24:00:00',
+    '--quiet', 
+    '--exclude=node0008'
 ]
 
 experiment_args = ExperimentArguments(
     name=args.name,
     script=experiment_dict['script'],
     conda_env='task_planning_babyai',
-    num_trials=10,
+    num_trials=NUM_TRIALS,
+    max_concurrent_running_trials=3,
     data_dir=experiment_dict['data_dir'],
-    auto_logging_checkpoint_dirs=True,
+    auto_make_logging_checkpoint_dirs=True
 )
 
-experiment = Experiment(
-    args=experiment_args,
-    sbatch_args=sbatch_args,
-    max_concurrent_runs=2,
-) 
+experiment = Experiment(args=experiment_args, params_slurm=params_slurm) 
 
-experiment.add_variable('num_data', [500, 750, 1000, 1500, 2500, 5000, 10000, 25000, 50000, 100000])
+experiment.add_variable('num_data', NUM_DATA_VAR)
 
 experiment.run()
+
