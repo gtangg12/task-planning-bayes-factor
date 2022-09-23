@@ -48,10 +48,11 @@ label_frequency = load_metric('classification-label_frequency')
 
 def compute_metrics(outputs):
     logits, labels, _ = outputs
-    _, preds = torch.max(logits, dim=1)
+    labels = labels.type(torch.IntTensor)
+    preds = torch.round(torch.squeeze(logits)).type(torch.IntTensor)
 
     preds_freq, labels_freq = \
-        label_frequency(preds, NUM_ACTIONS), label_frequency(labels, NUM_ACTIONS)
+        label_frequency(preds, 2), label_frequency(labels, 2)
 
     metrics = {
         'accuracy': accuracy(preds, labels),
@@ -89,7 +90,7 @@ model = ClassifierFilmRNN(
 
 
 ''' Training '''
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 bce_loss = nn.BCELoss()
 
@@ -104,8 +105,8 @@ training_args = TrainingArguments(
     save_dir=args.checkpoints_dir, 
     save_epochs=5,
     num_train_epochs=100,
-    per_device_train_batch_size=32,
-    per_device_eval_batch_size=32,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=16,
     include_inputs_for_metrics=True,
 )
 
