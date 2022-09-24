@@ -2,7 +2,7 @@
 data/
 logs/
 checkpoints/
-environments/
+#environments/
 
 # Slurm
 'nodelist.$'
