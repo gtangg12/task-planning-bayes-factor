@@ -4,7 +4,7 @@ Consider the problem of determining the next action of an agent trying to accomp
 
 $$p(a_t|g, o_{1:t}, a_{1:t-1})$$
 
-A naive solution is to train a model to directly predict the action using the above formulation. For instance, a model with a feature backbone and fine-tuned heads for each goal, which has the good property that the head is separate from each task. However, there are several issues if the action domain is not discrete/very large e.g. position of a robot arm in space.
+A naive solution is to train a model to directly predict the action using the above formulation. For instance, a model with a feature backbone and fine-tuned heads for each goal, which has the good property that the head is separate for task. However, there are several issues if the action domain is not discrete/very large e.g. position of a robot arm in space.
 
 - The above formulation is basically generative since the action domain is large, which is usually at least as hard as the discriminative alternative (given $a_t$ and context, determine if $a_t$ is the correct next action; discussed more in depth below). 
 
